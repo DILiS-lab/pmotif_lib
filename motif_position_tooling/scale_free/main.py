@@ -30,7 +30,7 @@ def generate_scale_free_graphs(
 
 def detect_motifs(motif_graphs: List[MotifGraphWithRandomization], motif_size: int):
     motif_graph: MotifGraphWithRandomization
-    for motif_graph in tqdm(motif_graphs, desc="Motif Detection on Scale Free Graphs", leave=False):
+    for motif_graph in tqdm(motif_graphs, desc="Motif Detection on Scale Free Graphs"):
         # Step 2.1: Detect Motifs for the scale free graph
         gtrieScanner(
             graph_edgelist=motif_graph.get_graph_path(),
@@ -40,12 +40,13 @@ def detect_motifs(motif_graphs: List[MotifGraphWithRandomization], motif_size: i
             output_directory=motif_graph.get_motif_directory(),
         )
         # Step 2.2: Detect Motifs for the corresponding edge-swapped graphs
+        pbar_edge_swapped_graphs = tqdm(
+            motif_graph.swapped_graphs,
+            desc="\tMotif Detection on Edge Swapped Graphs",
+            leave=False,
+        )
         edge_swapped_graph: MotifGraph
-        for edge_swapped_graph in tqdm(
-                motif_graph.swapped_graphs,
-                desc="\tMotif Detection on Edge Swapped Graphs",
-                leave=False,
-        ):
+        for edge_swapped_graph in pbar_edge_swapped_graphs:
             gtrieScanner(
                 graph_edgelist=edge_swapped_graph.get_graph_path(),
                 gtrieScanner_executable=GTRIESCANNER_EXECUTABLE,
@@ -61,18 +62,18 @@ def calculate_metrics_on_graphs(motif_graphs: List[MotifGraphWithRandomization],
     for motif_graph in tqdm(motif_graphs, desc="Motif Metrics on Scale Free Graphs"):
 
         data = calculate_metrics(motif_graph.get_graph_path(), motif_graph.get_motif_pos_zip(motif_size))
-        with open(motif_graph.get_motif_output_directory() / "motif_metric_data.json", "w") as f:
+        with open(motif_graph.get_motif_metric_json(motif_size), "w") as f:
             json.dump(data, f)
 
         edge_swapped: MotifGraph
         for edge_swapped in tqdm(motif_graph.swapped_graphs, desc="Swappings", leave=False):
             data = calculate_metrics(edge_swapped.get_graph_path(), edge_swapped.get_motif_pos_zip(motif_size))
-            with open(edge_swapped.get_motif_output_directory() / "motif_metric_data.json", "w") as f:
+            with open(edge_swapped.get_motif_metric_json(motif_size), "w") as f:
                 json.dump(data, f)
 
 
 def main():
-    graphs = generate_scale_free_graphs(2, 2, 1000)
+    graphs = generate_scale_free_graphs(5, 5, 100)
 
     pbar = tqdm([3, 4], desc="Processing Motif Size:")
     for k in pbar:
