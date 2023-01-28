@@ -71,6 +71,9 @@ class MotifGraph:
     def get_motif_pos_zip(self, motif_size: int) -> Path:
         return self.get_motif_directory() / str(motif_size) / "motif_pos.zip"
 
+    def get_motif_metric_json(self, motif_size: int) -> Path:
+        return self.get_motif_directory() / str(motif_size) / "motif_metric_data.json"
+
 
 class MotifGraphWithRandomization(MotifGraph):
     EDGE_SWAPPED_GRAPH_DIRECTORY_NAME = "edge_swappings"
