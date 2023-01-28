@@ -1,0 +1,7 @@
+.idea/
+.venv/
+gtrieScanner
+datasets/
+experiment_data/
+*/__pycache__/
+__pycache__/

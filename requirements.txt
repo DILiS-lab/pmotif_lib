@@ -1,0 +1,6 @@
+networkx
+tqdm
+powerlaw
+matplotlib
+ipykernel
+pyparsing
