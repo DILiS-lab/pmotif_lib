@@ -93,7 +93,7 @@ def process_motifs(g: nx.Graph, motifs: List[List[str]]):
 
     pbar_partition_participation = tqdm(motifs, desc="Calculating modularity partitions", leave=False)
     partition_participation = [
-        find_partition_participation(g, data["hubs"], motif)
+        find_partition_participation(g, data["modularity_partitions"], motif)
         for motif in
         pbar_partition_participation
     ]
