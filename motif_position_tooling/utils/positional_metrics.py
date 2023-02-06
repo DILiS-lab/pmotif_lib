@@ -7,6 +7,7 @@ from tqdm import tqdm
 import networkx as nx
 from networkx.algorithms.community import greedy_modularity_communities
 from motif_position_tooling.utils.motif_io import load_motif_zip
+from utils.motif_io import MotifGraph
 
 WORKERS = 8
 
@@ -72,11 +73,11 @@ def get_motif_degree(g: nx.Graph, motif: List[str]):
     return external_degree
 
 
-def calculate_metrics(graph_file: Path, motif_zip: Path):
+def calculate_metrics(motif_graph: MotifGraph, motif_size: int):
     """When pointed to a graph and a motif file, unzips the motif file, reads the graph and calculates various
     positional metrics"""
-    g = nx.readwrite.edgelist.read_edgelist(graph_file)
-    motifs = load_motif_zip(motif_zip)
+    g = nx.readwrite.edgelist.read_edgelist(motif_graph.get_graph_path())
+    motifs = load_motif_zip(motif_graph.get_motif_pos_zip(motif_size))
 
     return process_motifs(g, motifs)
 

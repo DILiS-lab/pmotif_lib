@@ -7,7 +7,7 @@ from uuid import uuid1
 from motif_position_tooling.config import EXPERIMENT_OUT, GTRIESCANNER_EXECUTABLE
 from motif_position_tooling.scale_free.generate_graphs import generate_graphs
 
-from motif_position_tooling.utils.controller import gtrieScanner
+from motif_position_tooling.utils.gtrieScannerUtils import gtrieScanner
 from motif_position_tooling.utils.motif_io import MotifGraphWithRandomization, MotifGraph
 from motif_position_tooling.utils.positional_metrics import calculate_metrics
 
@@ -42,7 +42,7 @@ def detect_motifs(motif_graphs: List[MotifGraphWithRandomization], motif_size: i
         # Step 2.2: Detect Motifs for the corresponding edge-swapped graphs
         pbar_edge_swapped_graphs = tqdm(
             motif_graph.swapped_graphs,
-            desc="\tMotif Detection on Edge Swapped Graphs",
+            desc="Motif Detection on Edge Swapped Graphs",
             leave=False,
         )
         edge_swapped_graph: MotifGraph
@@ -61,19 +61,19 @@ def calculate_metrics_on_graphs(motif_graphs: List[MotifGraphWithRandomization],
     motif_graph: MotifGraphWithRandomization
     for motif_graph in tqdm(motif_graphs, desc="Motif Metrics on Scale Free Graphs"):
 
-        data = calculate_metrics(motif_graph.get_graph_path(), motif_graph.get_motif_pos_zip(motif_size))
+        data = calculate_metrics(motif_graph, motif_size)
         with open(motif_graph.get_motif_metric_json(motif_size), "w") as f:
             json.dump(data, f)
 
         edge_swapped: MotifGraph
         for edge_swapped in tqdm(motif_graph.swapped_graphs, desc="Swappings", leave=False):
-            data = calculate_metrics(edge_swapped.get_graph_path(), edge_swapped.get_motif_pos_zip(motif_size))
+            data = calculate_metrics(edge_swapped, motif_size)
             with open(edge_swapped.get_motif_metric_json(motif_size), "w") as f:
                 json.dump(data, f)
 
 
 def main():
-    graphs = generate_scale_free_graphs(5, 5, 100)
+    graphs = generate_scale_free_graphs(100, 100, 100)
 
     pbar = tqdm([3, 4], desc="Processing Motif Size:")
     for k in pbar:
