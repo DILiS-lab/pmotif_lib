@@ -4,3 +4,4 @@ __pycache__/
 gtrieScanner
 datasets/
 experiment_data/
+.ipynb_checkpoints/
