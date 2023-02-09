@@ -2,8 +2,10 @@ import json
 from typing import List
 
 from tqdm import tqdm
+from multiprocessing import Pool
 from uuid import uuid1
 
+from motif_position_tooling.config.config import WORKERS
 from motif_position_tooling.config import EXPERIMENT_OUT, GTRIESCANNER_EXECUTABLE
 from motif_position_tooling.scale_free.generate_graphs import generate_graphs
 
@@ -56,20 +58,37 @@ def detect_motifs(motif_graphs: List[MotifGraphWithRandomization], motif_size: i
             )
 
 
+def _calc_and_dump(args):
+    """Calculates motif positional metrics and dumps them to disk"""
+    graph: MotifGraph
+    motif_size: int
+
+    graph, motif_size = args
+    data = calculate_metrics(graph, motif_size, disable_tqdm=True)
+    with open(graph.get_motif_metric_json(motif_size), "w") as f:
+        json.dump(data, f)
+
+
 # Step 3: Calculate Motif Positional Metrics
 def calculate_metrics_on_graphs(motif_graphs: List[MotifGraphWithRandomization], motif_size: int):
+    pool = Pool(WORKERS)
+
     motif_graph: MotifGraphWithRandomization
     for motif_graph in tqdm(motif_graphs, desc="Motif Metrics on Scale Free Graphs"):
+        _calc_and_dump((motif_graph, motif_size))
 
-        data = calculate_metrics(motif_graph, motif_size)
-        with open(motif_graph.get_motif_metric_json(motif_size), "w") as f:
-            json.dump(data, f)
-
-        edge_swapped: MotifGraph
-        for edge_swapped in tqdm(motif_graph.swapped_graphs, desc="Swappings", leave=False):
-            data = calculate_metrics(edge_swapped, motif_size)
-            with open(edge_swapped.get_motif_metric_json(motif_size), "w") as f:
-                json.dump(data, f)
+        for _ in tqdm(
+            pool.imap_unordered(
+                _calc_and_dump,
+                zip(motif_graph.swapped_graphs, [motif_size] * len(motif_graph.swapped_graphs)),
+                chunksize=5,
+            ),
+            desc="Swappings",
+            leave=False,
+            total=len(motif_graph.swapped_graphs),
+        ):
+            # Used to advance the progress bar
+            pass
 
 
 def main():

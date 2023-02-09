@@ -71,36 +71,36 @@ def get_motif_degree(g: nx.Graph, motif: List[str]):
     return external_degree
 
 
-def calculate_metrics(motif_graph: MotifGraph, motif_size: int):
+def calculate_metrics(motif_graph: MotifGraph, motif_size: int, disable_tqdm: bool = False):
     """When pointed to a graph and a motif file, unzips the motif file, reads the graph and calculates various
     positional metrics"""
     g = nx.readwrite.edgelist.read_edgelist(motif_graph.get_graph_path())
     motifs = load_motif_zip(motif_graph.get_motif_pos_zip(motif_size))
 
-    return process_motifs(g, motifs)
+    return process_motifs(g, motifs, disable_tqdm)
 
 
-def process_motifs(g: nx.Graph, motifs: List[List[str]]):
+def process_motifs(g: nx.Graph, motifs: List[List[str]], disable_tqdm: bool = False):
     """Calculate motif positional metrics"""
     hubs = get_hubs(g)
     modularity_partitions = modularity_communities(g)
 
     data = {"hubs": hubs, "modularity_partitions": modularity_partitions, "motif_data": {}}
 
-    pbar_hub_distance = tqdm(motifs, desc="Calculating hub distances", leave=False)
+    pbar_hub_distance = tqdm(motifs, desc="Calculating hub distances", leave=False, disable=disable_tqdm)
     hub_distance = [distance_to_hubs(g, data["hubs"], motif) for motif in pbar_hub_distance]
 
-    pbar_partition_participation = tqdm(motifs, desc="Calculating modularity partitions", leave=False)
+    pbar_partition_participation = tqdm(motifs, desc="Calculating modularity partitions", leave=False, disable=disable_tqdm)
     partition_participation = [
         find_partition_participation(g, data["modularity_partitions"], motif)
         for motif in
         pbar_partition_participation
     ]
 
-    pbar_degree = tqdm(motifs, desc="Calculating motif degrees", leave=False)
+    pbar_degree = tqdm(motifs, desc="Calculating motif degrees", leave=False, disable=disable_tqdm)
     motif_degree = [get_motif_degree(g, motif) for motif in pbar_degree]
 
-    for i, motif in enumerate(tqdm(motifs, desc="Packing motif data", leave=False)):
+    for i, motif in enumerate(tqdm(motifs, desc="Packing motif data", leave=False, disable=disable_tqdm)):
         data["motif_data"][i] = (i, {
             "motif_degree": motif_degree[i],
             "hub_distances": hub_distance[i],
