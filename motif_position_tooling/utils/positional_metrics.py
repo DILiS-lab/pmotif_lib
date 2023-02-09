@@ -9,8 +9,6 @@ from networkx.algorithms.community import greedy_modularity_communities
 from motif_position_tooling.utils.motif_io import load_motif_zip
 from motif_position_tooling.utils.motif_io import MotifGraph
 
-WORKERS = 8
-
 
 def get_hubs(g: nx.Graph):
     # We define a hub as a node with a degree one stdev abiove the avg
