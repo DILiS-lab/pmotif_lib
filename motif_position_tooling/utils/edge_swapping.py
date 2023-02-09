@@ -18,11 +18,11 @@ def swap_edges_markov_chain(g: nx.Graph, num: int, tries: int):
                     new_src_neighbors = list(g.neighbors(new_src))
                     if len(new_src_neighbors) == 0:
                         continue
-                    if src == new_src or dst == new_src or dst in new_src_neighbors:
+                    if src == new_src or dst == new_src or g.has_edge(new_src, dst):
                         # New src is either src or dst or already connected to dst
                         continue
                     new_dst = random.choice(new_src_neighbors)
-                    if src == new_dst or dst == new_dst or new_dst in src_neighbors:
+                    if src == new_dst or dst == new_dst or g.has_edge(src, new_dst):
                         # New dst is either src or dst or already connected by src
                         continue
                     found = True

@@ -25,6 +25,7 @@ def _generate_graph(i, number_of_nodes, num_of_random_graphs, experiment_dir) ->
         n=number_of_nodes,
     )
     g = nx.Graph(g)
+    g.remove_edges_from(nx.selfloop_edges(g))
 
     write_shifted_edgelist(g, experiment_dir / str(i) / graph_name, shift=1)
     # Generate random graphs
