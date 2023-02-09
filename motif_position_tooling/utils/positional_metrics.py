@@ -7,7 +7,7 @@ from tqdm import tqdm
 import networkx as nx
 from networkx.algorithms.community import greedy_modularity_communities
 from motif_position_tooling.utils.motif_io import load_motif_zip
-from utils.motif_io import MotifGraph
+from motif_position_tooling.utils.motif_io import MotifGraph
 
 WORKERS = 8
 
