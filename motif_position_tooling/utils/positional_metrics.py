@@ -74,7 +74,7 @@ def get_motif_degree(g: nx.Graph, motif: List[str]):
 def calculate_metrics(motif_graph: MotifGraph, motif_size: int, disable_tqdm: bool = False):
     """When pointed to a graph and a motif file, unzips the motif file, reads the graph and calculates various
     positional metrics"""
-    g = nx.readwrite.edgelist.read_edgelist(motif_graph.get_graph_path())
+    g = nx.readwrite.edgelist.read_edgelist(motif_graph.get_graph_path(), data=False, create_using=nx.Graph)
     motifs = load_motif_zip(motif_graph.get_motif_pos_zip(motif_size))
 
     return process_motifs(g, motifs, disable_tqdm)
