@@ -91,26 +91,3 @@ def parse_motif_analysis_results_table(frequency_file: Path, k: int) -> Dict[str
         frequencies[motif_id] = int(frequency)
 
     return frequencies
-
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        "motif detection controller",
-        "A python interface to execute a given gtrieScanner instance with given parameters",
-    )
-    parser.add_argument("gtrieScanner_executable", type=Path)
-    parser.add_argument("graph_edgelist", type=Path)
-    parser.add_argument("output_directory", type=Path)
-
-    parser.add_argument("-k", type=int, help="Motif Size [3,k]", dest="motif_size", required=True)
-
-    parser.add_argument("-d", "--directed", action="store_true", dest="directed", default=False)
-
-    args = parser.parse_args()
-    gtrieScanner(
-        graph_edgelist=args.graph_edgelist,
-        motif_size=args.motif_size,
-        output_directory=args.output_directory,
-        gtrieScanner_executable=args.gtrieScanner_executable,
-        directed=args.directed,
-    )
