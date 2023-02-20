@@ -4,3 +4,5 @@ powerlaw
 matplotlib
 ipykernel
 pyparsing
+pandas
+Jinja2
