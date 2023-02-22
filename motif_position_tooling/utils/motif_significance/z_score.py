@@ -1,7 +1,7 @@
 from statistics import mean, stdev
 from typing import List
 
-from motif_position_tooling.utils.gtrieScannerUtils import parse_motif_analysis_results_table
+from motif_position_tooling.gtrieScanner import parse_motif_analysis_results_table
 from motif_position_tooling.utils.motif_io import MotifGraphWithRandomization
 from motif_position_tooling.utils.motif_significance.freq_loader import get_all_motif_frequencies_of_randomized_graphs
 

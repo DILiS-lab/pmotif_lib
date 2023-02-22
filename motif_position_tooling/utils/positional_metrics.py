@@ -1,11 +1,13 @@
 """This utility takes a network and nodes (or supernodes)
 and calculates various positional metrics for those inputs"""
 import statistics
-from pathlib import Path
-from typing import List, Callable, Dict
+from typing import List, Callable, Dict, Iterable
 from tqdm import tqdm
 import networkx as nx
 from networkx.algorithms.community import greedy_modularity_communities
+
+from motif_position_tooling.utils.GraphletOccurence import GraphletOccurrence
+from motif_position_tooling.utils.GraphletPositionalMetrics import GraphletPositionalMetrics, GraphPositionalMetrics
 from motif_position_tooling.utils.motif_io import MotifGraph
 
 
@@ -78,42 +80,34 @@ def motif_module_participation(g: nx.Graph, modules: List[List[str]], motif: Lis
 
 def process_motifs(
         g: nx.Graph,
-        motifs: List[List[str]],
+        graphlet_occurrences: List[GraphletOccurrence],
         anchor_nodes_generator: Callable[[nx.Graph], List[str]] = get_hubs,
         graph_modules_generator: Callable[[nx.Graph], List[List[str]]] = get_modularity_communities,
-        disable_tqdm: bool = False):
+    ) -> GraphPositionalMetrics:
     """Calculate motif positional metrics"""
+
     anchor_nodes = anchor_nodes_generator(g)
     graph_modules = graph_modules_generator(g)
 
-    pbar_hub_distance = tqdm(motifs, desc="Calculating hub distances", leave=False, disable=disable_tqdm)
-    hub_distance = [motif_distance_to_nodes(g, anchor_nodes, motif) for motif in pbar_hub_distance]
+    positional_metrics: Dict[GraphletOccurrence, GraphletPositionalMetrics] = {}
 
-    pbar_partition_participation = tqdm(
-        motifs, desc="Calculating modularity partitions", leave=False, disable=disable_tqdm,
+    pbar_graphlet_occurrences: Iterable[GraphletOccurrence] = tqdm(
+        graphlet_occurrences,
+        desc="Calculating Positional Metrics for Graphlet Occurrences",
+        leave=False,
     )
-    partition_participation = [
-        motif_module_participation(g, graph_modules, motif)
-        for motif in
-        pbar_partition_participation
-    ]
+    for graphlet_occurrence in pbar_graphlet_occurrences:
+        positional_metrics[graphlet_occurrence] = GraphletPositionalMetrics(
+            degree=get_group_degree(g, graphlet_occurrence.nodes),
+            anchor_node_distances=motif_distance_to_nodes(g, anchor_nodes, graphlet_occurrence.nodes),
+            graph_module_participation=motif_module_participation(g, graph_modules, graphlet_occurrence.nodes),
+        )
 
-    pbar_degree = tqdm(motifs, desc="Calculating motif degrees", leave=False, disable=disable_tqdm)
-    motif_degree = [get_group_degree(g, motif) for motif in pbar_degree]
-
-    positional_metrics = {}
-    for i, motif in enumerate(tqdm(motifs, desc="Packing motif data", leave=False, disable=disable_tqdm)):
-        positional_metrics[i] = {
-            "motif_degree": motif_degree[i],
-            "hub_distances": hub_distance[i],
-            "partition_participation": partition_participation[i],
-        }
-
-    return {
-        "anchor_nodes": anchor_nodes,
-        "graph_modules": graph_modules,
-        "positional_metrics": positional_metrics,
-    }
+    return GraphPositionalMetrics(
+        anchor_nodes=anchor_nodes,
+        graph_modules=graph_modules,
+        graphlet_metrics=positional_metrics,
+    )
 
 
 def calculate_metrics(
@@ -121,10 +115,10 @@ def calculate_metrics(
         motif_size: int,
         anchor_nodes_generator: Callable[[nx.Graph], List[str]] = get_hubs,
         graph_modules_generator: Callable[[nx.Graph], List[List[str]]] = get_modularity_communities,
-        disable_tqdm: bool = False):
+    ) -> GraphPositionalMetrics:
     """When pointed to a graph and a motif file, unzips the motif file, reads the graph and calculates various
     positional metrics"""
     g = nx.readwrite.edgelist.read_edgelist(motif_graph.get_graph_path(), data=False, create_using=nx.Graph)
-    motifs = [motif_data["nodes"] for motif_index, motif_data in motif_graph.load_motif_pos_zip(motif_size).items()]
+    motifs: List[GraphletOccurrence] = motif_graph.load_motif_pos_zip(motif_size)
 
-    return process_motifs(g, motifs, anchor_nodes_generator, graph_modules_generator, disable_tqdm)
+    return process_motifs(g, motifs, anchor_nodes_generator, graph_modules_generator)

@@ -1,13 +1,14 @@
-import json
+import pickle
 import zipfile
 from pathlib import Path
 from os import listdir
-from typing import List, Dict, Union
+from typing import List, Dict
 from math import sqrt
 import networkx as nx
 
 import motif_position_tooling.gtrieScanner.graph_io as graph_io
 import motif_position_tooling.gtrieScanner.parsing as parsing
+from motif_position_tooling.utils.GraphletOccurence import GraphletOccurrence
 
 
 class MotifGraph:
@@ -39,10 +40,10 @@ class MotifGraph:
     def get_motif_pos_zip(self, motif_size: int) -> Path:
         return self.get_motif_directory() / str(motif_size) / "motif_pos.zip"
 
-    def load_motif_pos_zip(self, motif_size: int) -> Dict[int, Dict[str, Union[str, List[str]]]]:
+    def load_motif_pos_zip(self, motif_size: int) -> List[GraphletOccurrence]:
         """Returns all motifs in a lookup from their index to their id (adj matrix string) and a list of their nodes"""
         with zipfile.ZipFile(self.get_motif_pos_zip(motif_size), 'r') as zfile:
-            motifs = {}
+            motifs = []
             motif_size = None
             for i, line in enumerate(zfile.open("motif_pos")):
                 # Each line looks like this
@@ -53,15 +54,15 @@ class MotifGraph:
                     motif_size = int(sqrt(len(label)))
 
                 motif_id = " ".join([label[i:i+motif_size] for i in range(0, motif_size * motif_size, motif_size)])
-                motifs[i] = {"motif_id": motif_id, "nodes": [n.strip() for n in nodes]}
+                motifs.append(GraphletOccurrence(graphlet_class=motif_id, nodes=[n.strip() for n in nodes]))
         return motifs
 
-    def get_motif_metric_json(self, motif_size: int) -> Path:
-        return self.get_motif_directory() / str(motif_size) / "motif_metric_data.json"
+    def get_motif_metric_file(self, motif_size: int) -> Path:
+        return self.get_motif_directory() / str(motif_size) / "motif_metric_data.pickle"
 
-    def load_motif_metric_json(self, motif_size: int) -> Dict:
-        with open(self.get_motif_metric_json(motif_size), "rb") as f:
-            motif_metrics = json.load(f)
+    def load_motif_metric_file(self, motif_size: int) -> Dict:
+        with open(self.get_motif_metric_file(motif_size), "rb") as f:
+            motif_metrics = pickle.load(f)
         return motif_metrics
 
 
