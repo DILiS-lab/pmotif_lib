@@ -1,66 +1,30 @@
+import json
 import zipfile
-
-import networkx as nx
 from pathlib import Path
-from typing import List
 from os import listdir
+from typing import List, Tuple, Dict
+from math import sqrt
+import networkx as nx
 
-
-def write_shifted_edgelist(g: nx.Graph, path: Path, shift=1, reindex=False):
-    node_mapping = dict(zip(g.nodes, g.nodes))
-    if reindex:
-        # Create node mapping
-        node_mapping = {n: i for i, n in enumerate(g.nodes)}
-
-    lines = [f"{node_mapping[u] + shift} {node_mapping[v] + shift}\n" for u, v in g.edges()]
-    with open(path, "w") as out:
-        out.writelines(lines)
-
-
-def load_motif_zip(motif_zip: Path) -> List[List[str]]:
-    with zipfile.ZipFile(motif_zip, 'r') as zfile:
-        motifs = []
-        for line in zfile.open("motif_pos"):
-            label, *nodes = line.decode().split(" ")
-            motifs.append([n.strip() for n in nodes])
-    return motifs
+import motif_position_tooling.gtrieScanner.graph_io as graph_io
+import motif_position_tooling.gtrieScanner.parsing as parsing
 
 
 class MotifGraph:
-    """An Object wrapper around the folder structure of a graph which is subject to motif detection
-    Such a graph's filesystem equavalent looks like this
-    -some_path
-    --<graphname>.edgelist
-    --<graphname>.edgelist_motifs/
-    ----<motif_size>/
-    ------motif_freq
-    ------motif_pos.zip
-    --edge_swappings/
-    ----0_random.edgelist
-    ----1_random.edgelist
-    ----<n>_random.edgelist
-    ----1_random.edgelist_motifs/
-    ------<motif_size>/
-    --------motif_freq
-    --------motif_pos.zip
-    ----2_random.edgelist_motifs/
-    ------<motif_size>/
-    --------motif_freq
-    --------motif_pos.zip
-    ----<n>_random.edgelist_motifs/
-    ------<motif_size>/
-    --------motif_freq
-    --------motif_pos.zip
-    """
-    def __init__(self, directory: Path, graph_name: str):
+    """An Object wrapper around the folder structure of a graph which is subject to motif detection"""
+    def __init__(self, directory: Path, graph_name: str, output_directory: Path = None):
         self.directory = directory
+        self.output_directory = self.directory if output_directory is None else output_directory
         self.graph_name = graph_name
 
     def get_graph_path(self) -> Path:
         return self.directory / self.graph_name
 
+    def load_graph(self) -> nx.Graph:
+        return graph_io.read_edgelist(self.get_graph_path())
+
     def get_motif_directory(self) -> Path:
-        return self.directory / (self.graph_name + "_motifs")
+        return self.output_directory / (self.graph_name + "_motifs")
 
     def get_motif_output_directory(self, motif_size: int) -> Path:
         return self.get_motif_directory() / str(motif_size)
@@ -68,14 +32,40 @@ class MotifGraph:
     def get_motif_freq_file(self, motif_size: int) -> Path:
         return self.get_motif_directory() / str(motif_size) / "motif_freq"
 
+    def load_motif_freq_file(self, motif_size: int) -> Dict[str, int]:
+        return parsing.parse_motif_analysis_results_table(self.get_motif_freq_file(motif_size))
+
     def get_motif_pos_zip(self, motif_size: int) -> Path:
         return self.get_motif_directory() / str(motif_size) / "motif_pos.zip"
+
+    def load_motif_pos_zip(self, motif_size: int) -> List[Tuple[str, List[str]]]:
+        """Returns all motifs as tuples of their id (adj matrix string) and a list of their nodes"""
+        with zipfile.ZipFile(self.get_motif_pos_zip(motif_size), 'r') as zfile:
+            motifs = []
+            motif_size = None
+            for line in zfile.open("motif_pos"):
+                # Each line looks like this
+                # '<adj.matrix written in one line>: <node1> <node2> ...'
+                label, *nodes = line.decode().split(" ")
+                label = label[:-1]  # Strip the trailing ':'
+                if motif_size is None:
+                    motif_size = int(sqrt(len(label)))
+
+                motif_id = " ".join([label[i:i+motif_size] for i in range(0, motif_size * motif_size, motif_size)])
+                motifs.append((motif_id, [n.strip() for n in nodes]))
+        return motifs
 
     def get_motif_metric_json(self, motif_size: int) -> Path:
         return self.get_motif_directory() / str(motif_size) / "motif_metric_data.json"
 
+    def load_motif_metric_json(self, motif_size: int) -> Dict:
+        with open(self.get_motif_metric_json(motif_size), "rb") as f:
+            motif_metrics = json.load(f)
+        return motif_metrics
+
 
 class MotifGraphWithRandomization(MotifGraph):
+    """A MotifGraph g which contains references to other motif graphs that were generated from g using a null model"""
     EDGE_SWAPPED_GRAPH_DIRECTORY_NAME = "edge_swappings"
 
     def __init__(self, directory: Path, graph_name: str):
@@ -86,9 +76,9 @@ class MotifGraphWithRandomization(MotifGraph):
         swapped_edge_lists = [
             f
             for f in listdir(self.edge_swapped_graph_directory)
-            if (self.edge_swapped_graph_directory / f).is_file()
+            if (self.edge_swapped_graph_directory / str(f)).is_file()
         ]
         self.swapped_graphs: List[MotifGraph] = [
-            MotifGraph(self.edge_swapped_graph_directory, f)
+            MotifGraph(self.edge_swapped_graph_directory, str(f))
             for f in swapped_edge_lists
         ]
