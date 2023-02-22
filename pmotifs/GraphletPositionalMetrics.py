@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import List, Dict
 
-from pmotifs.utils.GraphletOccurence import GraphletOccurrence
+from pmotifs.GraphletOccurence import GraphletOccurrence
 
 
 @dataclass

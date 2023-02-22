@@ -10,8 +10,8 @@ from pmotifs.config import EXPERIMENT_OUT, GTRIESCANNER_EXECUTABLE
 from pmotifs.gtrieScanner.wrapper import run_gtrieScanner
 from scale_free.generate_graphs import generate_graphs
 
-from pmotifs.utils.motif_io import PMotifGraphWithRandomization, PMotifGraph
-from pmotifs.utils.positional_metrics import calculate_metrics
+from pmotifs.PMotifGraph import PMotifGraphWithRandomization, PMotifGraph
+from pmotifs.positional_metrics import calculate_metrics
 
 BASENAME = f"scale_free_{uuid1()}"
 

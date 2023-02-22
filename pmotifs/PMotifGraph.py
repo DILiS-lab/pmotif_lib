@@ -8,7 +8,7 @@ import networkx as nx
 
 import pmotifs.gtrieScanner.graph_io as graph_io
 import pmotifs.gtrieScanner.parsing as parsing
-from pmotifs.utils.GraphletOccurence import GraphletOccurrence
+from pmotifs.GraphletOccurence import GraphletOccurrence
 
 
 class PMotifGraph:

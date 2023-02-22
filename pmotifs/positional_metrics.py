@@ -6,9 +6,9 @@ from tqdm import tqdm
 import networkx as nx
 from networkx.algorithms.community import greedy_modularity_communities
 
-from pmotifs.utils.GraphletOccurence import GraphletOccurrence
-from pmotifs.utils.GraphletPositionalMetrics import GraphletPositionalMetrics, GraphPositionalMetrics
-from pmotifs.utils.motif_io import PMotifGraph
+from pmotifs.GraphletOccurence import GraphletOccurrence
+from pmotifs.GraphletPositionalMetrics import GraphletPositionalMetrics, GraphPositionalMetrics
+from pmotifs.PMotifGraph import PMotifGraph
 
 
 def get_hubs(g: nx.Graph) -> List[str]:
