@@ -7,9 +7,9 @@ from uuid import uuid1
 
 from motif_position_tooling.config.config import WORKERS
 from motif_position_tooling.config import EXPERIMENT_OUT, GTRIESCANNER_EXECUTABLE
-from motif_position_tooling.scale_free.generate_graphs import generate_graphs
+from scale_free.generate_graphs import generate_graphs
 
-from motif_position_tooling.utils.gtrieScannerUtils import gtrieScanner
+from motif_position_tooling.gtrieScanner import run
 from motif_position_tooling.utils.motif_io import MotifGraphWithRandomization, MotifGraph
 from motif_position_tooling.utils.positional_metrics import calculate_metrics
 
@@ -34,7 +34,7 @@ def detect_motifs(motif_graphs: List[MotifGraphWithRandomization], motif_size: i
     motif_graph: MotifGraphWithRandomization
     for motif_graph in tqdm(motif_graphs, desc="Motif Detection on Scale Free Graphs"):
         # Step 2.1: Detect Motifs for the scale free graph
-        gtrieScanner(
+        run(
             graph_edgelist=motif_graph.get_graph_path(),
             gtrieScanner_executable=GTRIESCANNER_EXECUTABLE,
             directed=False,
@@ -49,7 +49,7 @@ def detect_motifs(motif_graphs: List[MotifGraphWithRandomization], motif_size: i
         )
         edge_swapped_graph: MotifGraph
         for edge_swapped_graph in pbar_edge_swapped_graphs:
-            gtrieScanner(
+            run(
                 graph_edgelist=edge_swapped_graph.get_graph_path(),
                 gtrieScanner_executable=GTRIESCANNER_EXECUTABLE,
                 directed=False,
@@ -92,7 +92,7 @@ def calculate_metrics_on_graphs(motif_graphs: List[MotifGraphWithRandomization],
 
 
 def main():
-    graphs = generate_scale_free_graphs(100, 100, 100)
+    graphs = generate_scale_free_graphs(5, 5, 100)
 
     pbar = tqdm([3, 4], desc="Processing Motif Size:")
     for k in pbar:

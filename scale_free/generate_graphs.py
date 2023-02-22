@@ -10,7 +10,8 @@ from tqdm.contrib.concurrent import process_map
 
 from motif_position_tooling.config.config import WORKERS
 from motif_position_tooling.utils.edge_swapping import swap_edges_markov_chain
-from motif_position_tooling.utils.motif_io import write_shifted_edgelist, MotifGraphWithRandomization
+from motif_position_tooling.utils.motif_io import MotifGraphWithRandomization
+from motif_position_tooling.gtrieScanner.graph_io import write_shifted_edgelist
 
 
 # GENERATE GRAPHS
