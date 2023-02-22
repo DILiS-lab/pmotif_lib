@@ -47,7 +47,7 @@ def get_group_degree(g: nx.Graph, group: List[str]) -> int:
     return external_degree
 
 
-def motif_distance_to_nodes(g: nx.Graph, anchor_nodes: List[str], motif: List[str]):
+def graphlet_occurrence_distance_to_nodes(g: nx.Graph, anchor_nodes: List[str], group: List[str]):
 
     nodes_shortest_path_lookup = {
         anchor_node: nx.single_source_shortest_path_length(g, anchor_node)
@@ -59,26 +59,26 @@ def motif_distance_to_nodes(g: nx.Graph, anchor_nodes: List[str], motif: List[st
     anchor_node: str
     shortest_path_lookup: Dict[str, int]
     for anchor_node, shortest_path_lookup in nodes_shortest_path_lookup.items():
-        if anchor_node in motif:
+        if anchor_node in group:
             path_lengths.append(0)
             continue
-        shortest_path = min([shortest_path_lookup.get(n, -1) for n in motif])
+        shortest_path = min([shortest_path_lookup.get(n, -1) for n in group])
 
         path_lengths.append(shortest_path)
     return path_lengths
 
 
-def motif_module_participation(g: nx.Graph, modules: List[List[str]], motif: List[str]):
+def graphlet_occurrence_module_participation(g: nx.Graph, modules: List[List[str]], graphlet_oc: List[str]):
     participations = []
     for i, p in enumerate(modules):
-        for node in motif:
+        for node in graphlet_oc:
             if node in p:
                 participations.append(i)
                 break
     return participations
 
 
-def process_motifs(
+def process_graphlet_occurrences(
         g: nx.Graph,
         graphlet_occurrences: List[GraphletOccurrence],
         anchor_nodes_generator: Callable[[nx.Graph], List[str]] = get_hubs,
@@ -99,8 +99,8 @@ def process_motifs(
     for graphlet_occurrence in pbar_graphlet_occurrences:
         positional_metrics[graphlet_occurrence] = GraphletPositionalMetrics(
             degree=get_group_degree(g, graphlet_occurrence.nodes),
-            anchor_node_distances=motif_distance_to_nodes(g, anchor_nodes, graphlet_occurrence.nodes),
-            graph_module_participation=motif_module_participation(g, graph_modules, graphlet_occurrence.nodes),
+            anchor_node_distances=graphlet_occurrence_distance_to_nodes(g, anchor_nodes, graphlet_occurrence.nodes),
+            graph_module_participation=graphlet_occurrence_module_participation(g, graph_modules, graphlet_occurrence.nodes),
         )
 
     return GraphPositionalMetrics(
@@ -119,6 +119,6 @@ def calculate_metrics(
     """When pointed to a graph and a motif file, unzips the motif file, reads the graph and calculates various
     positional metrics"""
     g = nx.readwrite.edgelist.read_edgelist(pmotif_graph.get_graph_path(), data=False, create_using=nx.Graph)
-    motifs: List[GraphletOccurrence] = pmotif_graph.load_graphlet_pos_zip(graphlet_size)
+    graphlet_occurrences: List[GraphletOccurrence] = pmotif_graph.load_graphlet_pos_zip(graphlet_size)
 
-    return process_motifs(g, motifs, anchor_nodes_generator, graph_modules_generator)
+    return process_graphlet_occurrences(g, graphlet_occurrences, anchor_nodes_generator, graph_modules_generator)
