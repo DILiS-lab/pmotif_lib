@@ -1,4 +1,4 @@
-# Motif Position Tooling
+# pMotif Masterthesis
 
 ## Setup
 
@@ -14,7 +14,7 @@ pip3 install -r requirements.txt
 ```
 
 ### Pythonpath
-For ease of use you can add the motif_position_tooling module to the `PYTHONPATH`. This can also be scoped only for your virtualenv by changing `.venv/bin/activate`
+For ease of use you can add the `pmotifs` module to the `PYTHONPATH`. This can also be scoped only for your virtualenv by changing `.venv/bin/activate`
 ([see this stackoverflow question](https://stackoverflow.com/a/4758351)):
 
 ```bash

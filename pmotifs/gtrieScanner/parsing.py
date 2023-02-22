@@ -2,9 +2,9 @@ from pathlib import Path
 from typing import Dict
 
 
-def parse_motif_analysis_results_table(frequency_file: Path, k: int) -> Dict[str, int]:
-    """Load a motif frequency file created by gtrieScanner
-    Return a lookup from motif-class-id (adj-matrix) to the number of motif-occurrences"""
+def parse_graphlet_detection_results_table(frequency_file: Path, k: int) -> Dict[str, int]:
+    """Load a graphlet frequency file created by gtrieScanner
+    Return a lookup from graphlet-class (adj-matrix) to the number of graphlet-occurrences"""
     with open(frequency_file, "r") as f:
         lines = f.readlines()
     table_lines = lines[lines.index("Motif Analysis Results\n") + 2:]
@@ -22,14 +22,14 @@ def parse_motif_analysis_results_table(frequency_file: Path, k: int) -> Dict[str
     # So we process k+1 lines batches, to process each row
     table_row_height = k + 1
     for i in range(0, len(table_lines), table_row_height):
-        _, *motif_id_parts = table_lines[i:i + table_row_height]
+        _, *graphlet_class_parts = table_lines[i:i + table_row_height]
 
         # Separate last part into graph part and metric part
-        frequency = motif_id_parts[-1].split("|")[0].split(" ")[-2]
-        motif_id_parts[-1] = motif_id_parts[-1].split(" ")[0]
+        frequency = graphlet_class_parts[-1].split("|")[0].split(" ")[-2]
+        graphlet_class_parts[-1] = graphlet_class_parts[-1].split(" ")[0]
 
-        motif_id = " ".join(map(lambda s: s.strip(), motif_id_parts))
+        graphlet_class = " ".join(map(lambda s: s.strip(), graphlet_class_parts))
 
-        frequencies[motif_id] = int(frequency)
+        frequencies[graphlet_class] = int(frequency)
 
     return frequencies

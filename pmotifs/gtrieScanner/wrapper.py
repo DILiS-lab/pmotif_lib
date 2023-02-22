@@ -7,7 +7,7 @@ import zipfile
 
 def run_gtrieScanner(
         graph_edgelist: Path,
-        motif_size: int,
+        graphlet_size: int,
         output_directory: Path,
         gtrieScanner_executable: Path,
         directed: bool = False,
@@ -15,7 +15,7 @@ def run_gtrieScanner(
     """
     Detects motifs for the given edge list and compresses the result
     """
-    out_dir = output_directory / str(motif_size)
+    out_dir = output_directory / str(graphlet_size)
     os.makedirs(out_dir)
 
     # Make sure network is in gTrie-readable format
@@ -36,7 +36,7 @@ def run_gtrieScanner(
 
     command_parts = [
         f"{prefix}{gtrieScanner_executable}",
-        "-s", motif_size,
+        "-s", graphlet_size,
         "-f", "simple",
         "-g", graph_edgelist,
         directed_arg,
@@ -54,11 +54,11 @@ def run_gtrieScanner(
     p.wait()
 
     # Store motifs in max compressed zip for space efficiency
-    with zipfile.ZipFile(f"{output_directory / str(motif_size) / 'motif_pos.zip'}", "w") as zipf:
+    with zipfile.ZipFile(f"{output_directory / str(graphlet_size) / 'motif_pos.zip'}", "w") as zipf:
         zipf.write(
-            f"{output_directory / str(motif_size) / 'motif_pos'}",
+            f"{output_directory / str(graphlet_size) / 'motif_pos'}",
             compress_type=zipfile.ZIP_DEFLATED,
             compresslevel=9,
             arcname="motif_pos",
         )
-    os.remove(output_directory / str(motif_size) / 'motif_pos')
+    os.remove(output_directory / str(graphlet_size) / 'motif_pos')

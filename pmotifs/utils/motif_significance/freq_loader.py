@@ -1,12 +1,12 @@
 """Calculate Significance of Motifs in a given RandomizedMotifgraph"""
 from typing import List, Dict
 
-from pmotifs.utils.motif_io import MotifGraphWithRandomization, MotifGraph
+from pmotifs.utils.motif_io import PMotifGraphWithRandomization, PMotifGraph
 from pmotifs.gtrieScanner import parse_motif_analysis_results_table
 
 
 def get_all_motif_frequencies_of_randomized_graphs(
-    g: MotifGraphWithRandomization,
+    g: PMotifGraphWithRandomization,
     k: int,
 ) -> Dict[str, List[int]]:
     """Concat all frequencies of the random graphs of the given MotifGraphWithRandomization into a lookup"""
@@ -17,14 +17,14 @@ def get_all_motif_frequencies_of_randomized_graphs(
 
 
 def get_all_motif_frequencies_of_graphs(
-        graphs: List[MotifGraph],
+        graphs: List[PMotifGraph],
         k: int,
 ) -> Dict[str, List[int]]:
     """Concat all frequencies of the given MotifGraphs into a lookup"""
     frequencies = {}
     for g in graphs:
         _f = parse_motif_analysis_results_table(
-            g.get_motif_freq_file(k),
+            g.get_graphlet_freq_file(k),
             k,
         )
         for motif_id, freq in _f.items():

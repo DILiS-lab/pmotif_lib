@@ -8,7 +8,7 @@ from networkx.algorithms.community import greedy_modularity_communities
 
 from pmotifs.utils.GraphletOccurence import GraphletOccurrence
 from pmotifs.utils.GraphletPositionalMetrics import GraphletPositionalMetrics, GraphPositionalMetrics
-from pmotifs.utils.motif_io import MotifGraph
+from pmotifs.utils.motif_io import PMotifGraph
 
 
 def get_hubs(g: nx.Graph) -> List[str]:
@@ -111,14 +111,14 @@ def process_motifs(
 
 
 def calculate_metrics(
-        motif_graph: MotifGraph,
-        motif_size: int,
+        pmotif_graph: PMotifGraph,
+        graphlet_size: int,
         anchor_nodes_generator: Callable[[nx.Graph], List[str]] = get_hubs,
         graph_modules_generator: Callable[[nx.Graph], List[List[str]]] = get_modularity_communities,
     ) -> GraphPositionalMetrics:
     """When pointed to a graph and a motif file, unzips the motif file, reads the graph and calculates various
     positional metrics"""
-    g = nx.readwrite.edgelist.read_edgelist(motif_graph.get_graph_path(), data=False, create_using=nx.Graph)
-    motifs: List[GraphletOccurrence] = motif_graph.load_motif_pos_zip(motif_size)
+    g = nx.readwrite.edgelist.read_edgelist(pmotif_graph.get_graph_path(), data=False, create_using=nx.Graph)
+    motifs: List[GraphletOccurrence] = pmotif_graph.load_graphlet_pos_zip(graphlet_size)
 
     return process_motifs(g, motifs, anchor_nodes_generator, graph_modules_generator)

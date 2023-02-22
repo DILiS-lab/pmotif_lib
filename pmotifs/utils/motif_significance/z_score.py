@@ -2,7 +2,7 @@ from statistics import mean, stdev
 from typing import List
 
 from pmotifs.gtrieScanner import parse_motif_analysis_results_table
-from pmotifs.utils.motif_io import MotifGraphWithRandomization
+from pmotifs.utils.motif_io import PMotifGraphWithRandomization
 from pmotifs.utils.motif_significance.freq_loader import get_all_motif_frequencies_of_randomized_graphs
 
 
@@ -12,7 +12,7 @@ def z_score(original_frequency: int, random_frequencies: List[int]) -> float:
     return (original_frequency - mean(random_frequencies)) / stdev(random_frequencies)
 
 
-def get_z_scores_for_motifs(motif_graph: MotifGraphWithRandomization, motif_size: int):
+def get_z_scores_for_motifs(motif_graph: PMotifGraphWithRandomization, motif_size: int):
     original_motif_freq = parse_motif_analysis_results_table(motif_graph.get_motif_freq_file(motif_size), motif_size)
     randomized_frequencies = get_all_motif_frequencies_of_randomized_graphs(motif_graph, motif_size)
 

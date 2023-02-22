@@ -3,7 +3,7 @@
 import networkx as nx
 
 
-MOTIF_NAME_LOOKUP = {
+GRAPHLET_CLASS_NAME_LOOKUP = {
     "011 101 110": "Triangle",
     "001 001 110": "3-Dash",
     "0111 1000 1000 1000": "Fork",
@@ -15,15 +15,15 @@ MOTIF_NAME_LOOKUP = {
 }
 
 
-def motif_id_to_name(motif_id: str) -> str:
-    return MOTIF_NAME_LOOKUP[motif_id]
+def graphlet_class_to_name(graphlet_class: str) -> str:
+    return GRAPHLET_CLASS_NAME_LOOKUP[graphlet_class]
 
 
-def motif_id_to_graph(motif_id: str) -> nx.Graph:
+def graphlet_class_to_graph(graphlet_class: str) -> nx.Graph:
     """motif_id is a k*k matrix where each row consists of either
     0 or 1, and rows a separated by space
     Example: 0110 1001 1000 0100"""
-    rows = motif_id.split(" ")
+    rows = graphlet_class.split(" ")
 
     g = nx.Graph()
     for i in range(len(rows)):
