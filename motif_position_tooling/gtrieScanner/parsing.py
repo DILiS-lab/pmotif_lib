@@ -3,7 +3,8 @@ from typing import Dict
 
 
 def parse_motif_analysis_results_table(frequency_file: Path, k: int) -> Dict[str, int]:
-    """Load a motif frequency file created by gtrieScanner"""
+    """Load a motif frequency file created by gtrieScanner
+    Return a lookup from motif-class-id (adj-matrix) to the number of motif-occurrences"""
     with open(frequency_file, "r") as f:
         lines = f.readlines()
     table_lines = lines[lines.index("Motif Analysis Results\n") + 2:]

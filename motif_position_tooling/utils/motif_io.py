@@ -2,7 +2,7 @@ import json
 import zipfile
 from pathlib import Path
 from os import listdir
-from typing import List, Tuple, Dict
+from typing import List, Dict, Union
 from math import sqrt
 import networkx as nx
 
@@ -33,17 +33,18 @@ class MotifGraph:
         return self.get_motif_directory() / str(motif_size) / "motif_freq"
 
     def load_motif_freq_file(self, motif_size: int) -> Dict[str, int]:
+        """Return a lookup from motif-id to count of motif occurrence"""
         return parsing.parse_motif_analysis_results_table(self.get_motif_freq_file(motif_size))
 
     def get_motif_pos_zip(self, motif_size: int) -> Path:
         return self.get_motif_directory() / str(motif_size) / "motif_pos.zip"
 
-    def load_motif_pos_zip(self, motif_size: int) -> List[Tuple[str, List[str]]]:
-        """Returns all motifs as tuples of their id (adj matrix string) and a list of their nodes"""
+    def load_motif_pos_zip(self, motif_size: int) -> Dict[int, Dict[str, Union[str, List[str]]]]:
+        """Returns all motifs in a lookup from their index to their id (adj matrix string) and a list of their nodes"""
         with zipfile.ZipFile(self.get_motif_pos_zip(motif_size), 'r') as zfile:
-            motifs = []
+            motifs = {}
             motif_size = None
-            for line in zfile.open("motif_pos"):
+            for i, line in enumerate(zfile.open("motif_pos")):
                 # Each line looks like this
                 # '<adj.matrix written in one line>: <node1> <node2> ...'
                 label, *nodes = line.decode().split(" ")
@@ -52,7 +53,7 @@ class MotifGraph:
                     motif_size = int(sqrt(len(label)))
 
                 motif_id = " ".join([label[i:i+motif_size] for i in range(0, motif_size * motif_size, motif_size)])
-                motifs.append((motif_id, [n.strip() for n in nodes]))
+                motifs[i] = {"motif_id": motif_id, "nodes": [n.strip() for n in nodes]}
         return motifs
 
     def get_motif_metric_json(self, motif_size: int) -> Path:
