@@ -8,14 +8,14 @@ from typing import List
 import networkx as nx
 from tqdm.contrib.concurrent import process_map
 
-from motif_position_tooling.config.config import WORKERS
-from motif_position_tooling.utils.edge_swapping import swap_edges_markov_chain
-from motif_position_tooling.utils.motif_io import MotifGraphWithRandomization
-from motif_position_tooling.gtrieScanner.graph_io import write_shifted_edgelist
+from pmotifs.config.config import WORKERS
+from pmotifs.utils.edge_swapping import swap_edges_markov_chain
+from pmotifs.utils.motif_io import PMotifGraphWithRandomization
+from pmotifs.gtrieScanner.graph_io import write_shifted_edgelist
 
 
 # GENERATE GRAPHS
-def _generate_graph(i, number_of_nodes, num_of_random_graphs, experiment_dir) -> MotifGraphWithRandomization:
+def _generate_graph(i, number_of_nodes, num_of_random_graphs, experiment_dir) -> PMotifGraphWithRandomization:
     graph_name = "scale_free_graph.edgelist"
 
     makedirs(experiment_dir / str(i), exist_ok=True)
@@ -29,7 +29,7 @@ def _generate_graph(i, number_of_nodes, num_of_random_graphs, experiment_dir) ->
 
     write_shifted_edgelist(g, experiment_dir / str(i) / graph_name, shift=1)
     # Generate random graphs
-    edge_swapped_dir = experiment_dir / str(i) / MotifGraphWithRandomization.EDGE_SWAPPED_GRAPH_DIRECTORY_NAME
+    edge_swapped_dir = experiment_dir / str(i) / PMotifGraphWithRandomization.EDGE_SWAPPED_GRAPH_DIRECTORY_NAME
     makedirs(edge_swapped_dir, exist_ok=True)
 
     for j in range(num_of_random_graphs):
@@ -40,14 +40,14 @@ def _generate_graph(i, number_of_nodes, num_of_random_graphs, experiment_dir) ->
         )
         write_shifted_edgelist(random_g, edge_swapped_dir / f"{j}_random.edgelist", shift=1)
 
-    return MotifGraphWithRandomization(experiment_dir / str(i), graph_name)
+    return PMotifGraphWithRandomization(experiment_dir / str(i), graph_name)
 
 
-def _generate_graphs_multiprocess_wrapper(args) -> MotifGraphWithRandomization:
+def _generate_graphs_multiprocess_wrapper(args) -> PMotifGraphWithRandomization:
     return _generate_graph(*args)
 
 
-def generate_graphs(num_of_graphs, num_of_random_graphs, number_of_nodes, experiment_dir) -> List[MotifGraphWithRandomization]:
+def generate_graphs(num_of_graphs, num_of_random_graphs, number_of_nodes, experiment_dir) -> List[PMotifGraphWithRandomization]:
     # Generate args
     static_args = (number_of_nodes, num_of_random_graphs, experiment_dir.absolute())
     fn_args = [[i] + list(static_args) for i in range(num_of_graphs)]
