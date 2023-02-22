@@ -40,7 +40,7 @@ def _generate_graph(i, number_of_nodes, num_of_random_graphs, experiment_dir) ->
         )
         write_shifted_edgelist(random_g, edge_swapped_dir / f"{j}_random.edgelist", shift=1)
 
-    return PMotifGraphWithRandomization(experiment_dir / str(i), graph_name)
+    return PMotifGraphWithRandomization(experiment_dir / str(i) / graph_name, experiment_dir / str(i))
 
 
 def _generate_graphs_multiprocess_wrapper(args) -> PMotifGraphWithRandomization:

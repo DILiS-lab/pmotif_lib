@@ -13,19 +13,18 @@ from pmotifs.utils.GraphletOccurence import GraphletOccurrence
 
 class PMotifGraph:
     """An Object wrapper around the folder structure of a graph which is subject to pmotif detection"""
-    def __init__(self, directory: Path, graph_name: str, output_directory: Path = None):
-        self.directory = directory
-        self.output_directory = self.directory if output_directory is None else output_directory
-        self.graph_name = graph_name
+    def __init__(self, edgelist_path: Path, output_directory: Path):
+        self.edgelist_path = edgelist_path
+        self.output_directory = output_directory
 
     def get_graph_path(self) -> Path:
-        return self.directory / self.graph_name
+        return self.edgelist_path
 
     def load_graph(self) -> nx.Graph:
         return graph_io.read_edgelist(self.get_graph_path())
 
     def get_graphlet_directory(self) -> Path:
-        return self.output_directory / (self.graph_name + "_motifs")
+        return self.output_directory / (self.edgelist_path.name + "_motifs")
 
     def get_graphlet_output_directory(self, graphlet_size: int) -> Path:
         return self.get_graphlet_directory() / str(graphlet_size)
@@ -73,10 +72,10 @@ class PMotifGraphWithRandomization(PMotifGraph):
     """A PMotifGraph g which contains references to other p motif graphs that were generated from g using a null model"""
     EDGE_SWAPPED_GRAPH_DIRECTORY_NAME = "edge_swappings"
 
-    def __init__(self, directory: Path, graph_name: str):
-        super().__init__(directory, graph_name)
+    def __init__(self, edgelist_path: Path, output_directory: Path):
+        super().__init__(edgelist_path, output_directory)
 
-        self.edge_swapped_graph_directory = self.directory / self.EDGE_SWAPPED_GRAPH_DIRECTORY_NAME
+        self.edge_swapped_graph_directory = self.output_directory / self.EDGE_SWAPPED_GRAPH_DIRECTORY_NAME
 
         swapped_edge_lists = [
             f
@@ -84,6 +83,6 @@ class PMotifGraphWithRandomization(PMotifGraph):
             if (self.edge_swapped_graph_directory / str(f)).is_file()
         ]
         self.swapped_graphs: List[PMotifGraph] = [
-            PMotifGraph(self.edge_swapped_graph_directory, str(f))
+            PMotifGraph(self.edge_swapped_graph_directory / str(f), self.edge_swapped_graph_directory)
             for f in swapped_edge_lists
         ]

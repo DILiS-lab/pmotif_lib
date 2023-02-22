@@ -39,7 +39,7 @@ def detect_motifs(motif_graphs: List[PMotifGraphWithRandomization], motif_size: 
             gtrieScanner_executable=GTRIESCANNER_EXECUTABLE,
             directed=False,
             graphlet_size=motif_size,
-            output_directory=motif_graph.get_motif_directory(),
+            output_directory=motif_graph.get_graphlet_directory(),
         )
         # Step 2.2: Detect Motifs for the corresponding edge-swapped graphs
         pbar_edge_swapped_graphs = tqdm(
@@ -92,7 +92,7 @@ def calculate_metrics_on_graphs(motif_graphs: List[PMotifGraphWithRandomization]
 
 
 def main():
-    graphs = generate_scale_free_graphs(50, 50, 20)
+    graphs = generate_scale_free_graphs(20, 10, 20)
 
     pbar = tqdm([3, 4], desc="Processing Motif Size:")
     for k in pbar:
