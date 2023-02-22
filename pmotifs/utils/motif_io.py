@@ -6,9 +6,9 @@ from typing import List, Dict
 from math import sqrt
 import networkx as nx
 
-import motif_position_tooling.gtrieScanner.graph_io as graph_io
-import motif_position_tooling.gtrieScanner.parsing as parsing
-from motif_position_tooling.utils.GraphletOccurence import GraphletOccurrence
+import pmotifs.gtrieScanner.graph_io as graph_io
+import pmotifs.gtrieScanner.parsing as parsing
+from pmotifs.utils.GraphletOccurence import GraphletOccurrence
 
 
 class MotifGraph:

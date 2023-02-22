@@ -1,9 +1,9 @@
 from statistics import mean, stdev
 from typing import List
 
-from motif_position_tooling.gtrieScanner import parse_motif_analysis_results_table
-from motif_position_tooling.utils.motif_io import MotifGraphWithRandomization
-from motif_position_tooling.utils.motif_significance.freq_loader import get_all_motif_frequencies_of_randomized_graphs
+from pmotifs.gtrieScanner import parse_motif_analysis_results_table
+from pmotifs.utils.motif_io import MotifGraphWithRandomization
+from pmotifs.utils.motif_significance.freq_loader import get_all_motif_frequencies_of_randomized_graphs
 
 
 def z_score(original_frequency: int, random_frequencies: List[int]) -> float:

@@ -1,8 +1,8 @@
 """Calculate Significance of Motifs in a given RandomizedMotifgraph"""
 from typing import List, Dict
 
-from motif_position_tooling.utils.motif_io import MotifGraphWithRandomization, MotifGraph
-from motif_position_tooling.gtrieScanner import parse_motif_analysis_results_table
+from pmotifs.utils.motif_io import MotifGraphWithRandomization, MotifGraph
+from pmotifs.gtrieScanner import parse_motif_analysis_results_table
 
 
 def get_all_motif_frequencies_of_randomized_graphs(
