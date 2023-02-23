@@ -34,7 +34,7 @@ class PMotifGraph:
 
     def load_graphlet_freq_file(self, graphlet_size: int) -> Dict[str, int]:
         """Return a lookup from graphlet-class to count of graphlet-occurrence"""
-        return parsing.parse_graphlet_detection_results_table(self.get_graphlet_freq_file(graphlet_size))
+        return parsing.parse_graphlet_detection_results_table(self.get_graphlet_freq_file(graphlet_size), graphlet_size)
 
     def get_graphlet_pos_zip(self, graphlet_size: int) -> Path:
         return self.get_graphlet_directory() / str(graphlet_size) / "motif_pos.zip"
@@ -49,6 +49,10 @@ class PMotifGraph:
                 # '<adj.matrix written in one line>: <node1> <node2> ...'
                 label, *nodes = line.decode().split(" ")
                 label = label[:-1]  # Strip the trailing ':'
+
+                # For reasons unknown, gtrieScanner reverses the adj matrix when saving occurrences
+                label = label[::-1]
+
                 if graphlet_size is None:
                     graphlet_size = int(sqrt(len(label)))
 

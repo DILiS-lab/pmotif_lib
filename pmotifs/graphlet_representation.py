@@ -5,7 +5,7 @@ import networkx as nx
 
 GRAPHLET_CLASS_NAME_LOOKUP = {
     "011 101 110": "Triangle",
-    "001 001 110": "3-Dash",
+    "011 100 100": "3-Dash",
     "0111 1000 1000 1000": "Fork",
     "0110 1001 1000 0100": "4-Dash",
     "0111 1010 1100 1000": "Spoon",
