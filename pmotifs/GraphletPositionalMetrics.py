@@ -51,7 +51,7 @@ class GraphPositionalMetrics:
     def from_json(json_object):
         def decode_graphlet_metric_tuple(e):
             g_oc = GraphletOccurrence.from_json(e["graphlet_occurrence"])
-            g_pm = GraphletPositionalMetrics.from_json(json_object["graphlet_positional_metrics"])
+            g_pm = GraphletPositionalMetrics.from_json(e["graphlet_positional_metrics"])
             return g_oc, g_pm
 
         return GraphPositionalMetrics(

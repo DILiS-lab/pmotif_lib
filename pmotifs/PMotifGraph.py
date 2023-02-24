@@ -1,4 +1,4 @@
-import pickle
+import json
 import zipfile
 from pathlib import Path
 from os import listdir
@@ -9,6 +9,7 @@ import networkx as nx
 import pmotifs.gtrieScanner.graph_io as graph_io
 import pmotifs.gtrieScanner.parsing as parsing
 from pmotifs.GraphletOccurence import GraphletOccurrence
+from pmotifs.GraphletPositionalMetrics import GraphPositionalMetrics
 
 
 class PMotifGraph:
@@ -64,11 +65,11 @@ class PMotifGraph:
         return graphlets
 
     def get_graphlet_metric_file(self, graphlet_size: int) -> Path:
-        return self.get_graphlet_directory() / str(graphlet_size) / "motif_metric_data.pickle"
+        return self.get_graphlet_directory() / str(graphlet_size) / "motif_metric_data.json"
 
-    def load_graphlet_metric_file(self, graphlet_size: int) -> Dict:
-        with open(self.get_graphlet_metric_file(graphlet_size), "rb") as f:
-            graphlet_metrics = pickle.load(f)
+    def load_graphlet_metric_file(self, graphlet_size: int) -> GraphPositionalMetrics:
+        with open(self.get_graphlet_metric_file(graphlet_size), "r") as f:
+            graphlet_metrics = GraphPositionalMetrics.from_json(json.load(f))
         return graphlet_metrics
 
 

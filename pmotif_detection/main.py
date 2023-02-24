@@ -1,4 +1,4 @@
-import pickle
+import json
 from pathlib import Path
 from os import makedirs
 import networkx as nx
@@ -39,8 +39,8 @@ def main(edgelist, out, graphlet_size):
     print("Calculating positional metrics")
     data = calculate_metrics(pmotif_graph, graphlet_size)
     print("Dumping positional metrics")
-    with open(pmotif_graph.get_graphlet_metric_file(graphlet_size), "wb") as f:
-        pickle.dump(data, f)
+    with open(pmotif_graph.get_graphlet_metric_file(graphlet_size), "w") as f:
+        json.dump(data.to_json(), f)
 
 
 if __name__ == "__main__":
@@ -48,6 +48,6 @@ if __name__ == "__main__":
     OUT = Path("/home/timgarrels/masterthesis/output/pmotif_detection/yeastInter_st")
     makedirs(OUT, exist_ok=True)
 
-    GRAPHLET_SIZE = 4
+    GRAPHLET_SIZE = 3
 
     main(GRAPH_EDGELIST, OUT, GRAPHLET_SIZE)

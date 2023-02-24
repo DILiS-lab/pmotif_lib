@@ -1,11 +1,9 @@
-import pickle
+import json
 from typing import List
 
 from tqdm import tqdm
-from multiprocessing import Pool
 from uuid import uuid1
 
-from pmotifs.config.config import WORKERS
 from pmotifs.config import EXPERIMENT_OUT, GTRIESCANNER_EXECUTABLE
 from pmotifs.gtrieScanner.wrapper import run_gtrieScanner
 from scale_free.generate_graphs import generate_graphs
@@ -58,37 +56,26 @@ def detect_motifs(motif_graphs: List[PMotifGraphWithRandomization], motif_size: 
             )
 
 
-def _calc_and_dump(args):
+def _calc_and_dump(graph: PMotifGraph, motif_size: int):
     """Calculates motif positional metrics and dumps them to disk"""
-    graph: PMotifGraph
-    motif_size: int
-
-    graph, motif_size = args
     data = calculate_metrics(graph, motif_size)
-    with open(graph.get_graphlet_metric_file(motif_size), "wb") as f:
-        pickle.dump(data, f)
+    with open(graph.get_graphlet_metric_file(motif_size), "w") as f:
+        json.dump(data.to_json(), f)
 
 
 # Step 3: Calculate Motif Positional Metrics
 def calculate_metrics_on_graphs(motif_graphs: List[PMotifGraphWithRandomization], motif_size: int):
-    pool = Pool(WORKERS)
-
     motif_graph: PMotifGraphWithRandomization
     for motif_graph in tqdm(motif_graphs, desc="Motif Metrics on Scale Free Graphs"):
-        _calc_and_dump((motif_graph, motif_size))
+        _calc_and_dump(motif_graph, motif_size)
 
-        for _ in tqdm(
-            pool.imap_unordered(
-                _calc_and_dump,
-                zip(motif_graph.swapped_graphs, [motif_size] * len(motif_graph.swapped_graphs)),
-                chunksize=5,
-            ),
+        for swapped_graph in tqdm(
+            motif_graph.swapped_graphs,
             desc="Swappings",
             leave=False,
-            total=len(motif_graph.swapped_graphs),
         ):
             # Used to advance the progress bar
-            pass
+            _calc_and_dump(swapped_graph, motif_size)
 
 
 def main():
