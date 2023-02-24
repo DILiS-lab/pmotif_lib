@@ -46,7 +46,6 @@ def run_gtrieScanner(
     command_parts = [str(p) for p in command_parts]
 
     # Run gtrieScanner
-    print("Running Motif Detection")
     p = Popen(
         command_parts,
         stdout=PIPE,
