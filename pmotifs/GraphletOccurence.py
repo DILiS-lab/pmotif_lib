@@ -18,3 +18,13 @@ class GraphletOccurrence:
 
     def __eq__(self, other):
         return self.graphlet_class == other.graphlet_class and self.nodes == other.nodes
+
+    def to_json(self):
+        return {"graphlet_class": self.graphlet_class, "nodes": self.nodes}
+
+    @staticmethod
+    def from_json(json_object):
+        return GraphletOccurrence(
+            graphlet_class=json_object["graphlet_class"],
+            nodes=json_object["nodes"],
+        )
