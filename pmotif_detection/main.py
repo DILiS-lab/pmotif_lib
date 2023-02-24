@@ -26,7 +26,9 @@ def load_graph(graph_edgelist, output_directory):
 
 
 def main(edgelist, out, graphlet_size):
+    print("Loading Graph")
     pmotif_graph = load_graph(edgelist, out)
+    print("Graphlet Detection")
     run_gtrieScanner(
         graph_edgelist=pmotif_graph.get_graph_path(),
         gtrieScanner_executable=GTRIESCANNER_EXECUTABLE,
@@ -34,8 +36,9 @@ def main(edgelist, out, graphlet_size):
         graphlet_size=graphlet_size,
         output_directory=pmotif_graph.get_graphlet_directory(),
     )
-
+    print("Calculating positional metrics")
     data = calculate_metrics(pmotif_graph, graphlet_size)
+    print("Dumping positional metrics")
     with open(pmotif_graph.get_graphlet_metric_file(graphlet_size), "wb") as f:
         pickle.dump(data, f)
 
