@@ -1,5 +1,10 @@
+import json
+import os
 from dataclasses import dataclass
+from pathlib import Path
 from typing import List, Dict
+
+import tqdm
 
 from pmotifs.GraphletOccurence import GraphletOccurrence
 
@@ -11,12 +16,12 @@ class GraphletPositionalMetrics:
     anchor_node_distances: List[int]
     graph_module_participation: List[int]
 
-    def to_json(self):
-        return {
+    def to_json(self) -> str:
+        return json.dumps({
             "degree": self.degree,
             "anchor_node_distances": self.anchor_node_distances,
             "graph_module_participation": self.graph_module_participation,
-        }
+        })
 
     @staticmethod
     def from_json(json_object):
@@ -32,34 +37,59 @@ class GraphPositionalMetrics:
     """Keeps track of positional metrics calculated in relation to one graph with anchor and module configuration"""
     anchor_nodes: List[str]
     graph_modules: List[List[str]]
-    graphlet_metrics: Dict[GraphletOccurrence, GraphletPositionalMetrics]
+    graphlet_metrics: List[GraphletPositionalMetrics]
 
-    def to_json(self):
-        return {
-            "anchor_nodes": self.anchor_nodes,
-            "graph_modules": self.graph_modules,
-            "graphlet_metrics": [
-                {
-                    "graphlet_occurrence": graphlet_occurrence.to_json(),
-                    "graphlet_positional_metrics": graphlet_positional_metrics.to_json(),
-                 }
-                for graphlet_occurrence, graphlet_positional_metrics in self.graphlet_metrics.items()
-            ],
-        }
+    def save(self, outpath: Path):
+        """Turn Results into multiple files, which can be read line by line and separately
+        This is necessary as larger graphs result in object multiple gigabytes in size when stored as json or pickle"""
+
+        if not outpath.is_dir():
+            os.mkdir(outpath)
+
+        with open(outpath / "anchor_nodes", "w") as f:
+            for an in self.anchor_nodes:
+                f.write(an)
+                f.write("\n")
+
+        with open(outpath / "graph_modules", "w") as f:
+            for gm in self.graph_modules:
+                f.write(" ".join(gm))
+                f.write("\n")
+
+        with open(outpath / "graphlet_metrics", "w") as f:
+            for gm in self.graphlet_metrics:
+                f.write(gm.to_json())
+                f.write("\n")
+
+        with open(outpath / "meta", "w") as f:
+            json.dump({
+                "anchor_nodes": len(self.anchor_nodes),
+                "graph_modules": len(self.graph_modules),
+                "graphlet_metrics": len(self.graphlet_metrics),
+            }, f)
 
     @staticmethod
-    def from_json(json_object):
-        def decode_graphlet_metric_tuple(e):
-            g_oc = GraphletOccurrence.from_json(e["graphlet_occurrence"])
-            g_pm = GraphletPositionalMetrics.from_json(e["graphlet_positional_metrics"])
-            return g_oc, g_pm
+    def load(outpath: Path):
+        with open(outpath / "meta", "r") as f:
+            file_lengths = json.load(f)
+
+        anchor_nodes = []
+        with open(outpath / "anchor_nodes", "r") as f:
+            for l in tqdm.tqdm(f, desc="Loading Anchor Nodes", total=int(file_lengths["anchor_nodes"])):
+                anchor_nodes.append(l.strip())
+
+        graph_modules = []
+        with open(outpath / "graph_modules", "r") as f:
+            for l in tqdm.tqdm(f, desc="Loading Graph Modules", total=int(file_lengths["graph_modules"])):
+                graph_modules.append(l.strip().split(" "))
+
+        graphlet_metrics = []
+        with open(outpath / "graphlet_metrics", "r") as f:
+            for l in tqdm.tqdm(f, desc="Loading Graphlet Metrics", total=int(file_lengths["graphlet_metrics"])):
+                graphlet_metrics.append(json.loads(l))
 
         return GraphPositionalMetrics(
-            anchor_nodes=json_object["anchor_nodes"],
-            graph_modules=json_object["graph_modules"],
-            graphlet_metrics=dict([
-                # TODO: Decode json object
-                decode_graphlet_metric_tuple(graphlet_metric_tuple)
-                for graphlet_metric_tuple in json_object["graphlet_metrics"]
-            ]),
+            anchor_nodes=anchor_nodes,
+            graph_modules=graph_modules,
+            graphlet_metrics=graphlet_metrics,
         )

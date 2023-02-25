@@ -58,9 +58,8 @@ def detect_motifs(motif_graphs: List[PMotifGraphWithRandomization], motif_size: 
 
 def _calc_and_dump(graph: PMotifGraph, motif_size: int):
     """Calculates motif positional metrics and dumps them to disk"""
-    data = calculate_metrics(graph, motif_size)
-    with open(graph.get_graphlet_metric_file(motif_size), "w") as f:
-        json.dump(data.to_json(), f)
+    positional_metrics = calculate_metrics(graph, motif_size)
+    positional_metrics.save(graph.get_positional_data_directory(motif_size))
 
 
 # Step 3: Calculate Motif Positional Metrics

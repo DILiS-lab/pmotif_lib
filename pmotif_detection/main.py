@@ -37,15 +37,14 @@ def main(edgelist, out, graphlet_size):
         output_directory=pmotif_graph.get_graphlet_directory(),
     )
     print("Calculating positional metrics")
-    data = calculate_metrics(pmotif_graph, graphlet_size)
+    positional_metrics = calculate_metrics(pmotif_graph, graphlet_size)
     print("Dumping positional metrics")
-    with open(pmotif_graph.get_graphlet_metric_file(graphlet_size), "w") as f:
-        json.dump(data.to_json(), f)
+    positional_metrics.save(pmotif_graph.get_positional_data_directory(graphlet_size))
 
 
 if __name__ == "__main__":
     GRAPH_EDGELIST = Path("/home/timgarrels/masterthesis/datasets/yeastInter_st.txt")
-    OUT = Path("/home/timgarrels/masterthesis/output/pmotif_detection/yeastInter_st")
+    OUT = Path("/home/timgarrels/masterthesis/output/pmotif_detection")
     makedirs(OUT, exist_ok=True)
 
     GRAPHLET_SIZE = 3

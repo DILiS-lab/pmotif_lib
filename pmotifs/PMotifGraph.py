@@ -64,13 +64,11 @@ class PMotifGraph:
                 graphlets.append(GraphletOccurrence(graphlet_class=graphlet_class, nodes=[n.strip() for n in nodes]))
         return graphlets
 
-    def get_graphlet_metric_file(self, graphlet_size: int) -> Path:
-        return self.get_graphlet_directory() / str(graphlet_size) / "motif_metric_data.json"
+    def get_positional_data_directory(self, graphlet_size: int) -> Path:
+        return self.get_graphlet_directory() / str(graphlet_size) / "positional_data"
 
-    def load_graphlet_metric_file(self, graphlet_size: int) -> GraphPositionalMetrics:
-        with open(self.get_graphlet_metric_file(graphlet_size), "r") as f:
-            graphlet_metrics = GraphPositionalMetrics.from_json(json.load(f))
-        return graphlet_metrics
+    def load_positional_data(self, graphlet_size: int) -> GraphPositionalMetrics:
+        return GraphPositionalMetrics.load(self.get_positional_data_directory(graphlet_size))
 
 
 class PMotifGraphWithRandomization(PMotifGraph):
