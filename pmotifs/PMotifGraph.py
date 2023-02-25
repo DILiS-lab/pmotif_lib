@@ -1,10 +1,10 @@
-import json
 import zipfile
 from pathlib import Path
 from os import listdir
 from typing import List, Dict
 from math import sqrt
 import networkx as nx
+from tqdm import tqdm
 
 import pmotifs.gtrieScanner.graph_io as graph_io
 import pmotifs.gtrieScanner.parsing as parsing
@@ -42,10 +42,16 @@ class PMotifGraph:
 
     def load_graphlet_pos_zip(self, graphlet_size: int) -> List[GraphletOccurrence]:
         """Returns all motifs in a lookup from their index to their id (adj matrix string) and a list of their nodes"""
+        graphlet_count = sum(self.load_graphlet_freq_file(graphlet_size).values())
+
         with zipfile.ZipFile(self.get_graphlet_pos_zip(graphlet_size), 'r') as zfile:
             graphlets = []
             graphlet_size = None
-            for i, line in enumerate(zfile.open("motif_pos")):
+            for i, line in tqdm(
+                    enumerate(zfile.open("motif_pos")),
+                    desc="Load Graphlet Positions",
+                    total=graphlet_count,
+            ):
                 # Each line looks like this
                 # '<adj.matrix written in one line>: <node1> <node2> ...'
                 label, *nodes = line.decode().split(" ")
