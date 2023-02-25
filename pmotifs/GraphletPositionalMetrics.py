@@ -86,7 +86,9 @@ class GraphPositionalMetrics:
         graphlet_metrics = []
         with open(outpath / "graphlet_metrics", "r") as f:
             for l in tqdm.tqdm(f, desc="Loading Graphlet Metrics", total=int(file_lengths["graphlet_metrics"])):
-                graphlet_metrics.append(json.loads(l))
+                graphlet_metrics.append(
+                    GraphletPositionalMetrics.from_json(json.loads(l))
+                )
 
         return GraphPositionalMetrics(
             anchor_nodes=anchor_nodes,
