@@ -11,6 +11,7 @@ def run_gtrieScanner(
         output_directory: Path,
         gtrieScanner_executable: Path,
         directed: bool = False,
+        with_weights: bool = True,
 ):
     """
     Detects motifs for the given edge list and compresses the result
@@ -32,12 +33,13 @@ def run_gtrieScanner(
 
     # Build GTrieScanner command
     directed_arg = "-d" if directed else "-u"
+    format_arg = "simple_weight" if with_weights else "simple"
     prefix = "./" if str(gtrieScanner_executable)[0] not in ["/", "."] else ""
 
     command_parts = [
         f"{prefix}{gtrieScanner_executable}",
         "-s", graphlet_size,
-        "-f", "simple",
+        "-f", format_arg,
         "-g", graph_edgelist,
         directed_arg,
         "-oc", out_dir / "motif_pos",
