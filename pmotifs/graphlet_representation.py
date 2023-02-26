@@ -19,6 +19,10 @@ def graphlet_class_to_name(graphlet_class: str) -> str:
     return GRAPHLET_CLASS_NAME_LOOKUP[graphlet_class]
 
 
+def graphlet_name_to_class(graphlet_class: str) -> str:
+    return {v: k for k, v in GRAPHLET_CLASS_NAME_LOOKUP.items()}[graphlet_class]
+
+
 def graphlet_class_to_graph(graphlet_class: str) -> nx.Graph:
     """motif_id is a k*k matrix where each row consists of either
     0 or 1, and rows a separated by space
