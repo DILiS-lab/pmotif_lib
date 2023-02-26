@@ -1,5 +1,9 @@
 from pathlib import Path
 
-EXPERIMENT_OUT = Path("./experiment_data")
-GTRIESCANNER_EXECUTABLE = Path("/home/timgarrels/Projects/masterthesis/experiment/bin/gtrieScanner/gtrieScanner")
+BASE_PATH = Path(__file__).absolute().parent.parent.parent.parent
+
+DATASET_DIRECTORY = BASE_PATH / "datasets"
+EXPERIMENT_OUT = BASE_PATH / "output"
+GTRIESCANNER_EXECUTABLE = BASE_PATH / "bin" / "gtrieScanner" / "gtrieScanner"
+
 WORKERS = 8

@@ -1,10 +1,8 @@
-import json
-from pathlib import Path
 from os import makedirs
 import networkx as nx
 
 from pmotifs.PMotifGraph import PMotifGraph
-from pmotifs.config import GTRIESCANNER_EXECUTABLE
+from pmotifs.config import GTRIESCANNER_EXECUTABLE, EXPERIMENT_OUT, DATASET_DIRECTORY
 from pmotifs.gtrieScanner.wrapper import run_gtrieScanner
 from pmotifs.positional_metrics import calculate_metrics
 
@@ -20,7 +18,7 @@ def load_graph(graph_edgelist, output_directory):
         raise ValueError("Graph contains Self-Loops!")  # Asserts simple graph
 
     if min(map(int, nx_graph.nodes)) < 1:
-        raise ValueError("Graph contains node ids below '1'!")  # Assert lowest node index is >= 1
+        raise ValueError("Graph contains node ids below '1'!")  # Assert the lowest node index is >= 1
 
     return PMotifGraph(graph_edgelist, output_directory)
 
@@ -43,8 +41,8 @@ def main(edgelist, out, graphlet_size):
 
 
 if __name__ == "__main__":
-    GRAPH_EDGELIST = Path("/home/timgarrels/masterthesis/datasets/yeastInter_st.txt")
-    OUT = Path("/home/timgarrels/masterthesis/output/pmotif_detection")
+    GRAPH_EDGELIST = DATASET_DIRECTORY / "yeastInter_st.txt"
+    OUT = EXPERIMENT_OUT / "pmotif_detection"
     makedirs(OUT, exist_ok=True)
 
     GRAPHLET_SIZE = 3
