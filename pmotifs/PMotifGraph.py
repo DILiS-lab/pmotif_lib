@@ -130,7 +130,7 @@ class PMotifGraphWithRandomization(PMotifGraph):
         if min_node < 1:
             required_shift = abs(min_node) + 1
 
-        for i in range(num_random_graphs):
+        for i in tqdm(range(num_random_graphs), desc="Creating Random Graphs", leave=False):
             random_g = swap_edges_markov_chain(g.copy(), swaps_per_edge, tries_per_swap)
 
             graph_io.write_shifted_edgelist(
