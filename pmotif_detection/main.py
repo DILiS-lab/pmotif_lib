@@ -67,8 +67,8 @@ def main(edgelist: Path, out: Path, graphlet_size: int, random_graphs: int = 0):
 
 if __name__ == "__main__":
     GRAPH_EDGELIST = DATASET_DIRECTORY / "yeastInter_st.txt"
-    OUT = EXPERIMENT_OUT / "pmotif_detection"
-    RANDOM_GRAPHS = 10
+    OUT = EXPERIMENT_OUT / "yeastInter_st"
+    RANDOM_GRAPHS = 1000
     GRAPHLET_SIZE = 3
 
     makedirs(OUT, exist_ok=True)
