@@ -1,8 +1,12 @@
 import zipfile
-from pathlib import Path
-from os import listdir
-from typing import List, Dict
 from math import sqrt
+from os import (
+    listdir,
+    makedirs
+)
+from pathlib import Path
+from typing import List, Dict
+
 import networkx as nx
 from tqdm import tqdm
 
@@ -10,10 +14,12 @@ import pmotifs.gtrieScanner.graph_io as graph_io
 import pmotifs.gtrieScanner.parsing as parsing
 from pmotifs.GraphletOccurence import GraphletOccurrence
 from pmotifs.GraphletPositionalMetrics import GraphPositionalMetrics
+from pmotifs.randomization import swap_edges_markov_chain
 
 
 class PMotifGraph:
     """An Object wrapper around the folder structure of a graph which is subject to pmotif detection"""
+
     def __init__(self, edgelist_path: Path, output_directory: Path):
         self.edgelist_path = edgelist_path
         self.output_directory = output_directory
@@ -95,3 +101,44 @@ class PMotifGraphWithRandomization(PMotifGraph):
             PMotifGraph(self.edge_swapped_graph_directory / str(f), self.edge_swapped_graph_directory)
             for f in swapped_edge_lists
         ]
+
+    @staticmethod
+    def create_from_pmotif_graph(
+        pmotif_graph: PMotifGraph,
+        num_random_graphs: int,
+        swaps_per_edge: int = 3,
+        tries_per_swap: int = 10,
+    ):
+        g = pmotif_graph.load_graph()
+
+        # Create object solely for paths
+        edge_swapped_dir = PMotifGraphWithRandomization(
+            pmotif_graph.edgelist_path,
+            pmotif_graph.output_directory,
+        ).edge_swapped_graph_directory
+        makedirs(edge_swapped_dir, exist_ok=True)
+
+        required_shift = 0
+        min_node = None
+        for n in g.nodes:
+            if min_node is None:
+                min_node = int(n)
+            if int(n) < min_node:
+                min_node = int(n)
+
+        if min_node < 1:
+            required_shift = abs(min_node) + 1
+
+        for i in range(num_random_graphs):
+            random_g = swap_edges_markov_chain(g.copy(), swaps_per_edge, tries_per_swap)
+
+            graph_io.write_shifted_edgelist(
+                random_g,
+                edge_swapped_dir / f"{i}_random.edgelist",
+                shift=required_shift,
+            )
+
+        return PMotifGraphWithRandomization(
+            pmotif_graph.edgelist_path,
+            pmotif_graph.output_directory,
+        )

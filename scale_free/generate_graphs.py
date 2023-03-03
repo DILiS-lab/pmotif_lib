@@ -10,7 +10,10 @@ from tqdm.contrib.concurrent import process_map
 
 from pmotifs.config.config import WORKERS
 from pmotifs.randomization import swap_edges_markov_chain
-from pmotifs.PMotifGraph import PMotifGraphWithRandomization
+from pmotifs.PMotifGraph import (
+    PMotifGraphWithRandomization,
+    PMotifGraph
+)
 from pmotifs.gtrieScanner.graph_io import write_shifted_edgelist
 
 
@@ -28,19 +31,11 @@ def _generate_graph(i, number_of_nodes, num_of_random_graphs, experiment_dir) ->
     g.remove_edges_from(nx.selfloop_edges(g))
 
     write_shifted_edgelist(g, experiment_dir / str(i) / graph_name, shift=1)
-    # Generate random graphs
-    edge_swapped_dir = experiment_dir / str(i) / PMotifGraphWithRandomization.EDGE_SWAPPED_GRAPH_DIRECTORY_NAME
-    makedirs(edge_swapped_dir, exist_ok=True)
 
-    for j in range(num_of_random_graphs):
-        random_g = swap_edges_markov_chain(
-            g.copy(),
-            3,
-            10,
-        )
-        write_shifted_edgelist(random_g, edge_swapped_dir / f"{j}_random.edgelist", shift=1)
-
-    return PMotifGraphWithRandomization(experiment_dir / str(i) / graph_name, experiment_dir / str(i))
+    return PMotifGraphWithRandomization.create_from_pmotif_graph(
+        PMotifGraph(experiment_dir / str(i) / graph_name, experiment_dir / str(i)),
+        num_of_random_graphs,
+    )
 
 
 def _generate_graphs_multiprocess_wrapper(args) -> PMotifGraphWithRandomization:
