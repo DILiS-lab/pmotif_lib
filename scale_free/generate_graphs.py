@@ -9,7 +9,7 @@ import networkx as nx
 from tqdm.contrib.concurrent import process_map
 
 from pmotifs.config.config import WORKERS
-from pmotifs.edge_swapping import swap_edges_markov_chain
+from pmotifs.randomization import swap_edges_markov_chain
 from pmotifs.PMotifGraph import PMotifGraphWithRandomization
 from pmotifs.gtrieScanner.graph_io import write_shifted_edgelist
 
