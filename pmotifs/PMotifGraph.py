@@ -14,6 +14,7 @@ import pmotifs.gtrieScanner.graph_io as graph_io
 import pmotifs.gtrieScanner.parsing as parsing
 from pmotifs.GraphletOccurence import GraphletOccurrence
 from pmotifs.GraphletPositionalMetrics import GraphPositionalMetrics
+
 from pmotifs.randomization import swap_edges_markov_chain
 
 
@@ -57,6 +58,7 @@ class PMotifGraph:
                     enumerate(zfile.open("motif_pos")),
                     desc="Load Graphlet Positions",
                     total=graphlet_count,
+                    leave=False,
             ):
                 # Each line looks like this
                 # '<adj.matrix written in one line>: <node1> <node2> ...'
@@ -84,7 +86,8 @@ class PMotifGraph:
 
 
 class PMotifGraphWithRandomization(PMotifGraph):
-    """A PMotifGraph g which contains references to other p motif graphs that were generated from g using a null model"""
+    """A PMotifGraph g which contains references to other p motif graphs
+    that were generated from g using a null model"""
     EDGE_SWAPPED_GRAPH_DIRECTORY_NAME = "edge_swappings"
 
     def __init__(self, edgelist_path: Path, output_directory: Path):
@@ -111,11 +114,9 @@ class PMotifGraphWithRandomization(PMotifGraph):
     ):
         g = pmotif_graph.load_graph()
 
-        # Create object solely for paths
-        edge_swapped_dir = PMotifGraphWithRandomization(
-            pmotif_graph.edgelist_path,
-            pmotif_graph.output_directory,
-        ).edge_swapped_graph_directory
+        edge_swapped_dir = (
+            pmotif_graph.output_directory / PMotifGraphWithRandomization.EDGE_SWAPPED_GRAPH_DIRECTORY_NAME
+        )
         makedirs(edge_swapped_dir, exist_ok=True)
 
         required_shift = 0

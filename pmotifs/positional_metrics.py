@@ -122,6 +122,7 @@ def process_graphlet_occurrences(
         with tqdm(
             total=len(graphlet_occurrences),
             desc="Calculating Positional Metrics for Graphlet Occurrences",
+            leave=False,
         ) as pbar:
             for g_pm in p.imap(
                     single_arg_wrapper_create_graphlet_positional_metrics,
@@ -146,9 +147,6 @@ def calculate_metrics(
 ) -> GraphPositionalMetrics:
     """When pointed to a graph and a motif file, unzips the motif file, reads the graph and calculates various
     positional metrics"""
-    print("Reading Graph")
     g = nx.readwrite.edgelist.read_edgelist(pmotif_graph.get_graph_path(), data=False, create_using=nx.Graph)
-    print("Loading Graphlet Occurrences")
     graphlet_occurrences: List[GraphletOccurrence] = pmotif_graph.load_graphlet_pos_zip(graphlet_size)
-    print("Processing Graphlet Occurrences")
     return process_graphlet_occurrences(g, graphlet_occurrences, anchor_nodes_generator, graph_modules_generator)
