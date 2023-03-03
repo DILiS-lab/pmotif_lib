@@ -4,6 +4,8 @@ from pathlib import Path
 import networkx as nx
 from tqdm import tqdm
 
+import argparse
+
 from pmotifs.PMotifGraph import PMotifGraph, PMotifGraphWithRandomization
 
 from pmotifs.config import (
@@ -66,10 +68,17 @@ def main(edgelist: Path, out: Path, graphlet_size: int, random_graphs: int = 0):
 
 
 if __name__ == "__main__":
-    GRAPH_EDGELIST = DATASET_DIRECTORY / "yeastInter_st.txt"
-    OUT = EXPERIMENT_OUT / "yeastInter_st"
-    RANDOM_GRAPHS = 1000
-    GRAPHLET_SIZE = 3
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--edgelist_name", required=True, type=str)
+    parser.add_argument("--graphlet_size", required=True, type=int, default=3, choices=[3, 4])
+    parser.add_argument("--random_graphs", required=False, type=int, default=0)
+
+    args = parser.parse_args()
+
+    GRAPH_EDGELIST = DATASET_DIRECTORY / args.edgelist_name
+    OUT = EXPERIMENT_OUT / GRAPH_EDGELIST.stem
+    GRAPHLET_SIZE = args.graphlet_size
+    RANDOM_GRAPHS = args.random_graphs
 
     makedirs(OUT, exist_ok=True)
 
