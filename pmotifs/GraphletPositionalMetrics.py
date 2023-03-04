@@ -2,11 +2,9 @@ import json
 import os
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List, Dict
+from typing import List
 
 import tqdm
-
-from pmotifs.GraphletOccurence import GraphletOccurrence
 
 
 @dataclass
@@ -69,23 +67,38 @@ class GraphPositionalMetrics:
             }, f)
 
     @staticmethod
-    def load(outpath: Path):
+    def load(outpath: Path, supress_tqdm: bool = False):
         with open(outpath / "meta", "r") as f:
             file_lengths = json.load(f)
 
         anchor_nodes = []
         with open(outpath / "anchor_nodes", "r") as f:
-            for l in tqdm.tqdm(f, desc="Loading Anchor Nodes", total=int(file_lengths["anchor_nodes"])):
+            for l in tqdm.tqdm(
+                f,
+                desc="Loading Anchor Nodes",
+                total=int(file_lengths["anchor_nodes"]),
+                disable=supress_tqdm,
+            ):
                 anchor_nodes.append(l.strip())
 
         graph_modules = []
         with open(outpath / "graph_modules", "r") as f:
-            for l in tqdm.tqdm(f, desc="Loading Graph Modules", total=int(file_lengths["graph_modules"])):
+            for l in tqdm.tqdm(
+                f,
+                desc="Loading Graph Modules",
+                total=int(file_lengths["graph_modules"]),
+                disable=supress_tqdm,
+            ):
                 graph_modules.append(l.strip().split(" "))
 
         graphlet_metrics = []
         with open(outpath / "graphlet_metrics", "r") as f:
-            for l in tqdm.tqdm(f, desc="Loading Graphlet Metrics", total=int(file_lengths["graphlet_metrics"])):
+            for l in tqdm.tqdm(
+                f,
+                desc="Loading Graphlet Metrics",
+                total=int(file_lengths["graphlet_metrics"]),
+                disable=supress_tqdm,
+            ):
                 graphlet_metrics.append(
                     GraphletPositionalMetrics.from_json(json.loads(l))
                 )

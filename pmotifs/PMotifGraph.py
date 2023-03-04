@@ -47,7 +47,7 @@ class PMotifGraph:
     def get_graphlet_pos_zip(self, graphlet_size: int) -> Path:
         return self.get_graphlet_directory() / str(graphlet_size) / "motif_pos.zip"
 
-    def load_graphlet_pos_zip(self, graphlet_size: int) -> List[GraphletOccurrence]:
+    def load_graphlet_pos_zip(self, graphlet_size: int, supress_tqdm: bool = False) -> List[GraphletOccurrence]:
         """Returns all motifs in a lookup from their index to their id (adj matrix string) and a list of their nodes"""
         graphlet_count = sum(self.load_graphlet_freq_file(graphlet_size).values())
 
@@ -59,6 +59,7 @@ class PMotifGraph:
                     desc="Load Graphlet Positions",
                     total=graphlet_count,
                     leave=False,
+                    disable=supress_tqdm,
             ):
                 # Each line looks like this
                 # '<adj.matrix written in one line>: <node1> <node2> ...'
@@ -81,8 +82,8 @@ class PMotifGraph:
     def get_positional_data_directory(self, graphlet_size: int) -> Path:
         return self.get_graphlet_directory() / str(graphlet_size) / "positional_data"
 
-    def load_positional_data(self, graphlet_size: int) -> GraphPositionalMetrics:
-        return GraphPositionalMetrics.load(self.get_positional_data_directory(graphlet_size))
+    def load_positional_data(self, graphlet_size: int, supress_tqdm: bool = False) -> GraphPositionalMetrics:
+        return GraphPositionalMetrics.load(self.get_positional_data_directory(graphlet_size), supress_tqdm)
 
 
 class PMotifGraphWithRandomization(PMotifGraph):
