@@ -15,6 +15,10 @@ GRAPHLET_CLASS_NAME_LOOKUP = {
 }
 
 
+def get_graphlet_size_from_class(graphlet_class: str) -> int:
+    return len(graphlet_class.split(" ")[0])
+
+
 def graphlet_class_to_name(graphlet_class: str) -> str:
     return GRAPHLET_CLASS_NAME_LOOKUP[graphlet_class]
 
