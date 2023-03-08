@@ -40,7 +40,9 @@ def process_graph(pmotif_graph: PMotifGraph, graphlet_size: int, check_validity:
         graphlet_size=graphlet_size,
         output_directory=pmotif_graph.get_graphlet_directory(),
     )
-    positional_metrics = calculate_metrics(pmotif_graph, graphlet_size)
+    positional_metrics, meta = calculate_metrics(pmotif_graph, graphlet_size)
+
+    meta.save(pmotif_graph.get_positional_data_directory(graphlet_size))
     positional_metrics.save(pmotif_graph.get_positional_data_directory(graphlet_size))
 
 

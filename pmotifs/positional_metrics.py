@@ -1,12 +1,18 @@
 """This utility takes a network and nodes (or supernodes)
 and calculates various positional metrics for those inputs"""
 import statistics
-from typing import List, Callable, Dict
+from typing import (
+    List,
+    Callable,
+    Dict,
+    Tuple
+)
 from tqdm import tqdm
 from multiprocessing import Pool
 import networkx as nx
 from networkx.algorithms.community import greedy_modularity_communities
 
+from pmotifs.PositionalMetricMeta import PositionalMetricMeta
 from pmotifs.GraphletOccurence import GraphletOccurrence
 from pmotifs.GraphletPositionalMetrics import GraphletPositionalMetrics, GraphPositionalMetrics
 from pmotifs.PMotifGraph import PMotifGraph
@@ -105,7 +111,7 @@ def process_graphlet_occurrences(
     graphlet_occurrences: List[GraphletOccurrence],
     anchor_nodes_generator: Callable[[nx.Graph], List[str]] = get_hubs,
     graph_modules_generator: Callable[[nx.Graph], List[List[str]]] = get_modularity_communities,
-) -> GraphPositionalMetrics:
+) -> Tuple[GraphPositionalMetrics, PositionalMetricMeta]:
     """Calculate motif positional metrics"""
 
     anchor_nodes = anchor_nodes_generator(g)
@@ -132,10 +138,13 @@ def process_graphlet_occurrences(
                 positional_metrics.append(g_pm)
                 pbar.update()
 
-    return GraphPositionalMetrics(
-        anchor_nodes=anchor_nodes,
-        graph_modules=graph_modules,
-        graphlet_metrics=positional_metrics,
+    return (
+        GraphPositionalMetrics(graphlet_metrics=positional_metrics),
+        PositionalMetricMeta(
+            anchor_nodes=anchor_nodes,
+            anchor_node_shortest_paths=nodes_shortest_path_lookup,
+            graph_modules=graph_modules,
+        ),
     )
 
 
@@ -144,7 +153,7 @@ def calculate_metrics(
     graphlet_size: int,
     anchor_nodes_generator: Callable[[nx.Graph], List[str]] = get_hubs,
     graph_modules_generator: Callable[[nx.Graph], List[List[str]]] = get_modularity_communities,
-) -> GraphPositionalMetrics:
+) -> Tuple[GraphPositionalMetrics, PositionalMetricMeta]:
     """When pointed to a graph and a motif file, unzips the motif file, reads the graph and calculates various
     positional metrics"""
     g = nx.readwrite.edgelist.read_edgelist(pmotif_graph.get_graph_path(), data=False, create_using=nx.Graph)

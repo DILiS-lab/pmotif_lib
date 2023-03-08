@@ -14,6 +14,7 @@ import pmotifs.gtrieScanner.graph_io as graph_io
 import pmotifs.gtrieScanner.parsing as parsing
 from pmotifs.GraphletOccurence import GraphletOccurrence
 from pmotifs.GraphletPositionalMetrics import GraphPositionalMetrics
+from pmotifs.PositionalMetricMeta import PositionalMetricMeta
 
 from pmotifs.randomization import swap_edges_markov_chain
 
@@ -82,8 +83,11 @@ class PMotifGraph:
     def get_positional_data_directory(self, graphlet_size: int) -> Path:
         return self.get_graphlet_directory() / str(graphlet_size) / "positional_data"
 
-    def load_positional_data(self, graphlet_size: int, supress_tqdm: bool = False) -> GraphPositionalMetrics:
+    def load_positional_metrics(self, graphlet_size: int, supress_tqdm: bool = False) -> GraphPositionalMetrics:
         return GraphPositionalMetrics.load(self.get_positional_data_directory(graphlet_size), supress_tqdm)
+
+    def load_positional_meta(self, graphlet_size: int, supress_tqdm: bool = False) -> PositionalMetricMeta:
+        return PositionalMetricMeta.load(self.get_positional_data_directory(graphlet_size), supress_tqdm)
 
 
 class PMotifGraphWithRandomization(PMotifGraph):
