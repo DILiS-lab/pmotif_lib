@@ -1,8 +1,26 @@
 import networkx as nx
 import pandas as pd
+import json
+
+from pmotifs.PMotifGraph import PMotifGraph
 
 
-def prepare_kamada_kawai_layout_with_multiple_components(nx_g):
+def get_kamada_kawai_layout(pmotif_graph: PMotifGraph):
+    if not (pmotif_graph.output_directory / "kamada_kawai_layout.json").is_file():
+        nx_g = pmotif_graph.load_graph()
+        pos = _prepare_kamada_kawai_layout_with_multiple_components(nx_g)
+
+        # Cast nd-Array type (from coords) to json serializable list
+        pos = {k: list(v) for k, v in pos.items()}
+
+        with open(pmotif_graph.output_directory / "kamada_kawai_layout.json", "w") as f:
+            json.dump(pos, f)
+
+    with open(pmotif_graph.output_directory / "kamada_kawai_layout.json", "r") as f:
+        return json.load(f)
+
+
+def _prepare_kamada_kawai_layout_with_multiple_components(nx_g):
     pos_df = pd.DataFrame(index=nx_g.nodes(), columns=nx_g.nodes())
     max_dist = -1
     for row, data in nx.shortest_path_length(nx_g):
