@@ -55,18 +55,17 @@ def main(edgelist: Path, out: Path, graphlet_size: int, random_graphs: int = 0):
         graphlet_size,
     )
 
-    if random_graphs > 0:
-        randomized_pmotif_graph = PMotifGraphWithRandomization.create_from_pmotif_graph(pmotif_graph, random_graphs)
-        del pmotif_graph
+    randomized_pmotif_graph = PMotifGraphWithRandomization.create_from_pmotif_graph(pmotif_graph, random_graphs)
+    del pmotif_graph
 
-        pbar_swapped_graphs = tqdm(
-            randomized_pmotif_graph.swapped_graphs,
-            desc="Processing swapped graphs",
-            leave=True,
-        )
-        swapped_graph: PMotifGraph
-        for swapped_graph in pbar_swapped_graphs:
-            process_graph(swapped_graph, graphlet_size, check_validity=False)
+    pbar_swapped_graphs = tqdm(
+        randomized_pmotif_graph.swapped_graphs,
+        desc="Processing swapped graphs",
+        leave=True,
+    )
+    swapped_graph: PMotifGraph
+    for swapped_graph in pbar_swapped_graphs:
+        process_graph(swapped_graph, graphlet_size, check_validity=False)
 
 
 if __name__ == "__main__":

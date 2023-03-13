@@ -117,12 +117,32 @@ class PMotifGraphWithRandomization(PMotifGraph):
         swaps_per_edge: int = 3,
         tries_per_swap: int = 10,
     ):
+        """num_random_graphs determines how many random graphs are generated
+        if num_random_graphs is >= 0 the call fails if random graphs are already present, otherwise, they are generated
+        if num_random_graphs is -1, no additional graphs are generated, however, the already present random graphs
+        will be used
+        """
         g = pmotif_graph.load_graph()
+        if num_random_graphs <= -1:
+            # Do not generate additional graphs
+            return PMotifGraphWithRandomization(
+                pmotif_graph.edgelist_path,
+                pmotif_graph.output_directory,
+            )
 
         edge_swapped_dir = (
             pmotif_graph.output_directory / PMotifGraphWithRandomization.EDGE_SWAPPED_GRAPH_DIRECTORY_NAME
         )
         makedirs(edge_swapped_dir, exist_ok=True)
+
+        swapped_edge_lists = [
+            str(f)
+            for f in listdir(edge_swapped_dir)
+            if (edge_swapped_dir / str(f)).is_file()
+        ]
+
+        if len(swapped_edge_lists) > 0 and num_random_graphs >= 0:
+            raise ValueError("`num_random_graphs` >= 0, but random graphs already present, abort. Did you mean `-1`?")
 
         required_shift = 0
         min_node = None
