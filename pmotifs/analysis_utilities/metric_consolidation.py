@@ -1,3 +1,4 @@
+from enum import Enum
 from statistics import mean
 
 from pmotifs.analysis_utilities.loading import Result

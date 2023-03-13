@@ -21,6 +21,7 @@ class Result:
     pmotif_graph: PMotifGraph
     positional_metric_df: pd.DataFrame
     positional_metric_meta: PositionalMetricMeta
+    graphlet_size: int
 
     @staticmethod
     def load_result(
@@ -59,9 +60,10 @@ class Result:
         )
 
         return Result(
-            pgraph,
-            positional_metric_df,
-            positional_metric_meta,
+            pmotif_graph=pgraph,
+            positional_metric_df=positional_metric_df,
+            positional_metric_meta=positional_metric_meta,
+            graphlet_size=graphlet_size,
         )
 
     @staticmethod
