@@ -4,10 +4,11 @@ import networkx as nx
 
 
 def write_shifted_edgelist(g: nx.Graph, path: Path, shift=1, reindex=False):
-    node_mapping = dict(zip(g.nodes, map(int, g.nodes)))
     if reindex:
         # Create node mapping
         node_mapping = {n: i for i, n in enumerate(g.nodes)}
+    else:
+        node_mapping = dict(zip(g.nodes, map(int, g.nodes)))
 
     lines = [f"{node_mapping[u] + shift} {node_mapping[v] + shift}\n" for u, v in g.edges()]
     with open(path, "w") as out:
