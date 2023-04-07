@@ -91,6 +91,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     out_path = f"./out/{args.edgelist_name}/{args.graphlet_size}"
-    execute(Path(out_path), args.graphlet_size, args.edgelist_name, args.edgelist_name.split(".")[0])
+    execute(Path(out_path), args.graphlet_size, args.edgelist_name, ".".join(args.edgelist_name.split(".")[:-1]))
 
     create(out_path)
