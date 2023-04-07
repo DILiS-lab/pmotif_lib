@@ -126,23 +126,24 @@ class GlobalScope:
 
         return self._pmotif_analysis_cache[metric_name]
 
-    def pmotif_analysis_result(self, metric_name: str, alpha_global: float = 0.05) -> Dict[str, Dict[str, int]]:
+    def pmotif_analysis_result(self, metric_name: str, alpha_global: float = 0.05) -> pd.DataFrame:
         """Counts the random graphs, where the mann whitney u test resulted in significance"""
         pmotif_analysis_data = self.get_pmotif_analysis_data(metric_name)
 
-        analysis_result = {}
+        analysis_result = []
         for graphlet_class, result_df in pmotif_analysis_data.items():
             # Bonferroni Correction
             alpha_local = alpha_global / result_df.shape[0]
 
             relevant_rows = result_df[result_df["p-value"] < alpha_local]
 
-            analysis_result[graphlet_class] = {
+            analysis_result.append({
+                "graphlet_class": graphlet_class,
                 "relevant": relevant_rows.shape[0],
                 "total": result_df.shape[0],
-            }
+            })
 
-        return analysis_result
+        return pd.DataFrame(analysis_result)
 
     def plot_sample_size_distribution(self, metric_name: str):
         """Plot the distribution of graphlet frequencies in random graphs, and
