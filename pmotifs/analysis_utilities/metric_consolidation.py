@@ -28,9 +28,7 @@ def _get_normalized_anchor_hop_distances(
     shortest_paths = result.positional_metric_meta.anchor_node_shortest_paths
 
     closeness_centrality = {
-        anchor_node: mean(
-            shortest_path_lookup.values()
-        )
+        anchor_node: mean(shortest_path_lookup.values())
         for anchor_node, shortest_path_lookup in shortest_paths.items()
     }
 
