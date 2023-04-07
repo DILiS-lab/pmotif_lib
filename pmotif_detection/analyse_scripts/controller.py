@@ -12,8 +12,8 @@ from pmotifs.analysis_utilities.loading import Result
 from pmotifs.config import config
 from pmotifs.analysis_utilities.metric_consolidation import metrics
 
-from local_scope import LocalScope
-from global_scope import GlobalScope
+from pmotif_detection.analyse_scripts.local_scope import LocalScope
+from pmotif_detection.analyse_scripts.global_scope import GlobalScope
 
 
 METRIC_NAMES = metrics.keys()

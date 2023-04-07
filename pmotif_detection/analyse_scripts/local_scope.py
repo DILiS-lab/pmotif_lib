@@ -6,7 +6,7 @@ from statistics import quantiles
 from pmotifs.analysis_utilities.loading import Result
 from pmotifs.graphlet_representation import graphlet_class_to_name
 
-from util import get_graphlet_classes
+from pmotif_detection.analyse_scripts.util import get_graphlet_classes
 
 
 class LocalScope:

@@ -13,7 +13,7 @@ from pmotifs.graphlet_representation import graphlet_class_to_name, graphlet_cla
 from pmotifs.PMotifGraph import PMotifGraph
 from pmotifs.graphlet_representation import GRAPHLET_CLASS_NAME_LOOKUP
 
-from util import to_graphlet_class_frequency, get_zscore, extract_metric_distribution, add_consolidated_metrics
+from pmotif_detection.analyse_scripts.util import to_graphlet_class_frequency, get_zscore, extract_metric_distribution, add_consolidated_metrics
 
 
 class GlobalScope:
