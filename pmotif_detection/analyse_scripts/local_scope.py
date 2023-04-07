@@ -76,10 +76,10 @@ class LocalScope:
             percentile_cuts = quantiles(metric, n=100, method="inclusive")
 
             cuts[graphlet_class] = {
-                "<1%": {"cut_value": percentile_cuts[0], "occurrence_count": 0},
-                "<5%": {"cut_value": percentile_cuts[4], "occurrence_count": 0},
-                ">95%": {"cut_value": percentile_cuts[-1], "occurrence_count": 0},
-                ">99%": {"cut_value": percentile_cuts[-5], "occurrence_count": 0},
+                "<1%": {"cut_value": round(percentile_cuts[0], 2), "occurrence_count": 0},
+                "<5%": {"cut_value": round(percentile_cuts[4], 2), "occurrence_count": 0},
+                ">95%": {"cut_value": round(percentile_cuts[-1], 2), "occurrence_count": 0},
+                ">99%": {"cut_value": round(percentile_cuts[-5], 2), "occurrence_count": 0},
             }
 
             for v in metric:
