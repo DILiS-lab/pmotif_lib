@@ -1,3 +1,4 @@
+import argparse
 from os import makedirs
 from pathlib import Path
 from typing import List
@@ -5,6 +6,7 @@ import matplotlib.pyplot as plt
 
 from tqdm import tqdm
 
+from pmotif_detection.analyse_scripts.report_generator import create
 from pmotif_detection.analyse_scripts.util import add_consolidated_metrics
 from pmotifs.analysis_utilities.loading import Result
 from pmotifs.config import config
@@ -15,7 +17,7 @@ from global_scope import GlobalScope
 
 
 METRIC_NAMES = metrics.keys()
-
+OUTPUT_PATH = "out"
 
 def execute(output_path: Path, graphlet_size: int, dataset: str, experiment_out: str):
     makedirs(output_path / "local", exist_ok=True)
@@ -82,4 +84,13 @@ def save_and_close_fig(fig, outpath: Path, name: str, file_types: List[str] = No
 
 
 if __name__ == "__main__":
-    execute(Path("./out"), 3, "yeastInter_st.txt", "yeastInter_st")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--edgelist_name", required=True, type=str)
+    parser.add_argument("--graphlet_size", required=True, type=int, default=3, choices=[3, 4])
+
+    args = parser.parse_args()
+
+    out_path = f"./out/{args.edgelist_name}/{args.graphlet_size}"
+    # execute(Path(out_path), args.graphlet_size, args.edgelist_name, args.edgelist_name.split(".")[0])
+
+    create(out_path)
