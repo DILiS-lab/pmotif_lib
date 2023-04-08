@@ -90,7 +90,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    outpath = config.EXPERIMENT_OUT / "analysis_out" / args.edgelist_name / str(args.graphlet_size)
+    outpath = config.ANALYSIS_OUT / args.edgelist_name / str(args.graphlet_size)
     execute(
         outpath,
         args.graphlet_size,
