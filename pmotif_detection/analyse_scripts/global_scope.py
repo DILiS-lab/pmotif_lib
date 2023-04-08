@@ -48,6 +48,12 @@ class GlobalScope:
     @staticmethod
     def _consolidate_randomized_results(randomized_results: List[Result]):
         """Consolidates the positional metrics in all given Results in a parallelized way"""
+        if WORKERS == 1:
+            return [
+                add_consolidated_metrics(r)
+                for r in tqdm(randomized_results, desc="(Seq) Consolidating metrics on randomized results")
+            ]
+
         with Pool(
             processes=WORKERS
         ) as p:
@@ -58,7 +64,7 @@ class GlobalScope:
             return p.map(
                 add_consolidated_metrics,
                 pbar,
-                chunksize=1,
+                chunksize=10,
             )
 
     def plot_graphlet_frequency(self):
