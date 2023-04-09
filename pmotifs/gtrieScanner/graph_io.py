@@ -10,7 +10,9 @@ def write_shifted_edgelist(g: nx.Graph, path: Path, shift=1, reindex=False):
     else:
         node_mapping = dict(zip(g.nodes, map(int, g.nodes)))
 
-    lines = [f"{node_mapping[u] + shift} {node_mapping[v] + shift}\n" for u, v in g.edges()]
+    # Creates edge list lines in the form of `u v 1`
+    # The `1` is necessary for gTrieScanner to function correctly, as it always expects a weight
+    lines = [f"{node_mapping[u] + shift} {node_mapping[v] + shift} 1\n" for u, v in g.edges()]
     with open(path, "w") as out:
         out.writelines(lines)
 
