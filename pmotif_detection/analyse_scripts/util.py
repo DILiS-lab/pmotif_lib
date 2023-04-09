@@ -30,6 +30,8 @@ def to_graphlet_class_frequency(result_df: pd.DataFrame) -> Dict[str, int]:
 
 
 def get_zscore(point: float, values: List[float]) -> float:
+    if point == 0 and set(values) == {0}:
+        return 0
     return (point - mean(values)) / stdev(values)
 
 
