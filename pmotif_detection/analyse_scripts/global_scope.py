@@ -102,11 +102,19 @@ class GlobalScope:
             data = {}
             pbar = tqdm(total=len(self.randomized_results.values()))
             for graphlet_class in self.graphlet_classes:
+
+                if graphlet_class not in original_distribution:
+                    # TODO: Update on clarifications on process
+                    continue
+
                 data[graphlet_class] = []
                 for r_df in self.randomized_results.values():
                     pbar.update(1 / len(self.graphlet_classes))
-
                     random_distribution = extract_metric_distribution(r_df, metric_name)
+
+                    if graphlet_class not in random_distribution:
+                        # TODO: Update on clarifications on process
+                        continue
 
                     mwu_result = mannwhitneyu(
                         original_distribution[graphlet_class],
@@ -160,6 +168,10 @@ class GlobalScope:
         fig, axes = plt.subplots(1, len(self.graphlet_classes), figsize=(len(self.graphlet_classes) * 5, 5))
         for i, graphlet_class in enumerate(self.graphlet_classes):
             ax = axes[i]
+            if graphlet_class not in pmotif_analysis_data.keys():
+                ax.set_title(f"{graphlet_class_to_name(graphlet_class)} not present in original graph!")
+                continue
+
             pmotif_analysis_data[graphlet_class][["sample-size"]].plot.hist(ax=ax)
 
             ax.axvline(pmotif_analysis_data[graphlet_class]["original-size"][0], label="original", color="tab:orange")
@@ -178,6 +190,10 @@ class GlobalScope:
         fig, axes = plt.subplots(1, len(self.graphlet_classes), figsize=(len(self.graphlet_classes) * 5, 5))
         for i, graphlet_class in enumerate(self.graphlet_classes):
             ax = axes[i]
+            if graphlet_class not in pmotif_analysis_data.keys():
+                ax.set_title(f"{graphlet_class_to_name(graphlet_class)} not present in original graph!")
+                continue
+
             pmotif_analysis_data[graphlet_class][["sample-median"]].plot.hist(ax=ax)
 
             ax.axvline(pmotif_analysis_data[graphlet_class]["original-median"][0], label="original", color="tab:orange")

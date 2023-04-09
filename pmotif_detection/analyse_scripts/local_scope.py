@@ -96,6 +96,8 @@ class LocalScope:
     def plot_occurrence_percentiles(self, metric_name: str):
         graphlet_classes = get_graphlet_classes(self.result_df)
         fig, axes = plt.subplots(1, len(graphlet_classes), figsize=(len(graphlet_classes) * 5, 5))
+        if len(graphlet_classes) == 1:
+            axes = [axes]
 
         cuts = self.get_percentile_cuts(metric_name)
 
