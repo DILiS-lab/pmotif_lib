@@ -111,11 +111,16 @@ class PMotifGraphWithRandomization(PMotifGraph):
         ]
 
     @staticmethod
+    def create_random_graph(g: nx.Graph) -> nx.Graph:
+        """Method used to create random graphs. Overwrite to set your own random graph method"""
+        swaps_per_edge = 3
+        tries_per_swap = 10
+        return swap_edges_markov_chain(g, swaps_per_edge, tries_per_swap)
+
+    @staticmethod
     def create_from_pmotif_graph(
         pmotif_graph: PMotifGraph,
         num_random_graphs: int,
-        swaps_per_edge: int = 3,
-        tries_per_swap: int = 10,
     ):
         """num_random_graphs determines how many random graphs are generated
         if num_random_graphs is >= 0 the call fails if random graphs are already present, otherwise, they are generated
@@ -156,7 +161,7 @@ class PMotifGraphWithRandomization(PMotifGraph):
             required_shift = abs(min_node) + 1
 
         for i in tqdm(range(num_random_graphs), desc="Creating Random Graphs", leave=False):
-            random_g = swap_edges_markov_chain(g.copy(), swaps_per_edge, tries_per_swap)
+            random_g = PMotifGraphWithRandomization.create_random_graph(g.copy())
 
             graph_io.write_shifted_edgelist(
                 random_g,
