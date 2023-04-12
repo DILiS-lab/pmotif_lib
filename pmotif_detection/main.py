@@ -1,20 +1,22 @@
+import argparse
 from os import makedirs
 from pathlib import Path
+from typing import List
 
 import networkx as nx
 from tqdm import tqdm
 
-import argparse
-
+import pmotifs.pMetrics.PMetric as PMetric
 from pmotifs.PMotifGraph import PMotifGraph, PMotifGraphWithRandomization
-
 from pmotifs.config import (
     GTRIESCANNER_EXECUTABLE,
     EXPERIMENT_OUT,
     DATASET_DIRECTORY,
 )
-
 from pmotifs.gtrieScanner.wrapper import run_gtrieScanner
+from pmotifs.pMetrics.PAnchorNodeDistance import PAnchorNodeDistance
+from pmotifs.pMetrics.PDegree import PDegree
+from pmotifs.pMetrics.PGraphModuleParticipation import PGraphModuleParticipation
 from pmotifs.positional_metrics import calculate_metrics
 
 
@@ -29,7 +31,7 @@ def assert_validity(pmotif_graph: PMotifGraph):
         raise ValueError("Graph contains node ids below '1'!")  # Assert the lowest node index is >= 1
 
 
-def process_graph(pmotif_graph: PMotifGraph, graphlet_size: int, check_validity: bool = True):
+def process_graph(pmotif_graph: PMotifGraph, graphlet_size: int, metrics: List[PMetric.PMetric], check_validity: bool = True):
     if check_validity:
         assert_validity(pmotif_graph)
 
@@ -40,19 +42,30 @@ def process_graph(pmotif_graph: PMotifGraph, graphlet_size: int, check_validity:
         graphlet_size=graphlet_size,
         output_directory=pmotif_graph.get_graphlet_directory(),
     )
-    positional_metrics, meta = calculate_metrics(pmotif_graph, graphlet_size)
 
-    meta.save(pmotif_graph.get_positional_data_directory(graphlet_size))
-    positional_metrics.save(pmotif_graph.get_positional_data_directory(graphlet_size))
+    if len(metrics) == 0:
+        return
+
+    metric_result_lookup = calculate_metrics(pmotif_graph, graphlet_size, metrics)
+
+    metric_output = pmotif_graph.get_pmetric_directory(graphlet_size)
+    makedirs(metric_output)
+    for metric_name, metric_result in metric_result_lookup.items():
+        makedirs(metric_output / metric_name)
+        metric_result.save_to_disk(metric_output / metric_name)
 
 
 def main(edgelist: Path, out: Path, graphlet_size: int, random_graphs: int = 0):
+    degree = PDegree()
+    anchor_node = PAnchorNodeDistance()
+    graph_module_participation = PGraphModuleParticipation()
 
     pmotif_graph = PMotifGraph(edgelist, out)
 
     process_graph(
         pmotif_graph,
         graphlet_size,
+        [degree, anchor_node, graph_module_participation],
     )
 
     randomized_pmotif_graph = PMotifGraphWithRandomization.create_from_pmotif_graph(pmotif_graph, random_graphs)
@@ -65,7 +78,12 @@ def main(edgelist: Path, out: Path, graphlet_size: int, random_graphs: int = 0):
     )
     swapped_graph: PMotifGraph
     for swapped_graph in pbar_swapped_graphs:
-        process_graph(swapped_graph, graphlet_size, check_validity=False)
+        process_graph(
+            swapped_graph,
+            graphlet_size,
+            [degree, anchor_node, graph_module_participation],
+            check_validity=False,
+        )
 
 
 if __name__ == "__main__":
