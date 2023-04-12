@@ -4,12 +4,14 @@ from subprocess import Popen, PIPE
 from pathlib import Path
 import zipfile
 
+from pmotifs.config import GTRIESCANNER_EXECUTABLE
+
 
 def run_gtrieScanner(
         graph_edgelist: Path,
         graphlet_size: int,
         output_directory: Path,
-        gtrieScanner_executable: Path,
+        gtrieScanner_executable: Path = GTRIESCANNER_EXECUTABLE,
         directed: bool = False,
         with_weights: bool = True,
 ):
