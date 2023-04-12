@@ -3,34 +3,23 @@ import os
 from dataclasses import dataclass
 from pathlib import Path
 from typing import (
-    List
+    List, Dict, Any
 )
 
 from tqdm import tqdm
 
 
-@dataclass
 class GraphletPositionalMetrics:
     """Keeps track of metrics calculated from one graphlet occurrence"""
-    degree: int
-    anchor_node_distances: List[int]
-    graph_module_participation: List[int]
+    def __init__(self, named_metrics: Dict[str, Any]):
+        self._named_metrics = named_metrics
 
     def to_json(self) -> str:
-        return json.dumps({
-            "degree": self.degree,
-            "anchor_node_distances": self.anchor_node_distances,
-            "graph_module_participation": self.graph_module_participation,
-        })
+        return json.dumps({name: m for name, m in self._named_metrics.items()})
 
     @staticmethod
     def from_json(json_string: str):
-        json_object = json.loads(json_string)
-        return GraphletPositionalMetrics(
-            degree=json_object["degree"],
-            anchor_node_distances=json_object["anchor_node_distances"],
-            graph_module_participation=json_object["graph_module_participation"],
-        )
+        return GraphletPositionalMetrics(json.loads(json_string))
 
 
 @dataclass

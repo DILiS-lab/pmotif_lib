@@ -11,9 +11,6 @@ class PAnchorNodeDistance(PMetric):
     def __init__(self):
         super().__init__("pAnchorNodeDistance")
 
-        self._anchor_nodes: List[str]
-        self._shortest_path_lookup = List[str]
-
     @staticmethod
     def get_hubs(g: nx.Graph) -> List[str]:
         """Returns hubs of a networkx graph
