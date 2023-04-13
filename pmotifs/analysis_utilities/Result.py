@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 from multiprocessing import Pool
 from pathlib import Path
-from typing import List
+from typing import List, Callable
 
 import pandas as pd
 from tqdm import tqdm
@@ -13,7 +13,11 @@ from pmotifs.PMotifGraph import (
     PMotifGraphWithRandomization
 )
 from pmotifs.config import WORKERS
+from pmotifs.pMetrics.PMetric import RawMetric, PreComputation
 from pmotifs.pMetrics.PMetricResult import PMetricResult
+
+
+ConsolidationMethod = Callable[[RawMetric, PreComputation], float]
 
 
 class Result:
@@ -36,6 +40,23 @@ class Result:
 
     def get_p_metric_result(self, name: str) -> PMetricResult:
         return self._p_metric_result_lookup[name]
+
+    def consolidate_metric(
+        self,
+        metric_name: str,
+        consolidate_name: str,
+        consolidate_method: ConsolidationMethod,
+    ):
+        """Applied `consolidate_method` on the `metric_name` column, creating a new `consolidate_name` column.
+        Feeds the pre-computation result and the raw metric into the `consolidate_method`.
+
+        Expects `metric_name` to be a name of a metric in `self.p_metric_results`.
+        """
+        p_metric_result = self.get_p_metric_result(metric_name)
+
+        self.positional_metric_df[consolidate_name] = self.positional_metric_df[metric_name].apply(
+            lambda x: consolidate_method(x, p_metric_result.pre_compute)
+        )
 
     @staticmethod
     def load_result(
