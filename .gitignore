@@ -11,3 +11,5 @@ experiment_data/
 notebook_reports/
 
 pmotif_detection/*.batch
+
+showcase/showcase_output/
