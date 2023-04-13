@@ -5,7 +5,7 @@ from pmotifs.analysis_utilities.loading import Result
 
 
 def get_degree(result: Result):
-    return list(result.positional_metric_df["degree"])
+    return list(result.positional_metric_df["pDegree"])
 
 
 def get_max_of_normalized_anchor_hop_distances(result: Result):
@@ -39,7 +39,7 @@ def _get_normalized_anchor_hop_distances(
                 )
         return normalized
 
-    normalized_col = result.positional_metric_df["anchor_node_distances"].apply(normalize_by_closeness_centrality)
+    normalized_col = result.positional_metric_df["pAnchorNodeDistance"].apply(normalize_by_closeness_centrality)
     return list(normalized_col)
 
 
@@ -47,7 +47,7 @@ def get_graph_module_participation_ratio(result: Result):
     total_module_count = len(
         result.get_p_metric_result("pGraphModuleParticipation").pre_compute["graph_modules"]
     )
-    ratio_col = result.positional_metric_df["graph_module_participation"].apply(
+    ratio_col = result.positional_metric_df["pGraphModuleParticipation"].apply(
         lambda l: len(l) / total_module_count
     )
     return ratio_col
