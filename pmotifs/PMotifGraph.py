@@ -13,8 +13,6 @@ from tqdm import tqdm
 import pmotifs.gtrieScanner.graph_io as graph_io
 import pmotifs.gtrieScanner.parsing as parsing
 from pmotifs.GraphletOccurence import GraphletOccurrence
-from pmotifs.GraphletPositionalMetrics import GraphPositionalMetrics
-from pmotifs.PositionalMetricMeta import PositionalMetricMeta
 
 from pmotifs.randomization import swap_edges_markov_chain
 
