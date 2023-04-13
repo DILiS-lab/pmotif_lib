@@ -1,5 +1,6 @@
 """This utility takes a network and nodes (or supernodes)
 and calculates various positional metrics for those inputs"""
+from os import makedirs
 from typing import (
     List,
     Dict,
@@ -57,7 +58,8 @@ def process_graphlet_occurrences(
 def calculate_metrics(
     pmotif_graph: PMotifGraph,
     graphlet_size: int,
-    metrics: List[PMetric]
+    metrics: List[PMetric],
+    save_to_disk: bool = True,
 ) -> Dict[str, PMetricResult]:
     """When pointed to a graph and a motif file, unzips the motif file, reads the graphs and calculates various
     positional metrics.
@@ -66,4 +68,12 @@ def calculate_metrics(
     g = nx.readwrite.edgelist.read_edgelist(pmotif_graph.get_graph_path(), data=False, create_using=nx.Graph)
     graphlet_occurrences: List[GraphletOccurrence] = pmotif_graph.load_graphlet_pos_zip(graphlet_size)
 
-    return process_graphlet_occurrences(g, graphlet_occurrences, metrics)
+    metric_result_lookup = process_graphlet_occurrences(g, graphlet_occurrences, metrics)
+    if save_to_disk:
+        metric_output = pmotif_graph.get_pmetric_directory(graphlet_size)
+        makedirs(metric_output)
+        for metric_name, metric_result in metric_result_lookup.items():
+            makedirs(metric_output / metric_name)
+            metric_result.save_to_disk(metric_output / metric_name)
+
+    return metric_result_lookup

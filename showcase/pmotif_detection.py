@@ -54,7 +54,7 @@ def get_metrics_by_graphlet_classes(pgraph: PMotifGraph, graphlet_size: int, met
     )
 
     graphlet_occurrences = pgraph.load_graphlet_pos_zip(graphlet_size)
-    metric_result_lookup = calculate_metrics(pgraph, graphlet_size, metrics)
+    metric_result_lookup = calculate_metrics(pgraph, graphlet_size, metrics, True)
 
     by_graphlet_class = {}
     for i, g_oc in enumerate(graphlet_occurrences):

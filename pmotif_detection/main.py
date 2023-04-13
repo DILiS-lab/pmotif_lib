@@ -46,13 +46,7 @@ def process_graph(pmotif_graph: PMotifGraph, graphlet_size: int, metrics: List[P
     if len(metrics) == 0:
         return
 
-    metric_result_lookup = calculate_metrics(pmotif_graph, graphlet_size, metrics)
-
-    metric_output = pmotif_graph.get_pmetric_directory(graphlet_size)
-    makedirs(metric_output)
-    for metric_name, metric_result in metric_result_lookup.items():
-        makedirs(metric_output / metric_name)
-        metric_result.save_to_disk(metric_output / metric_name)
+    calculate_metrics(pmotif_graph, graphlet_size, metrics, True)
 
 
 def main(edgelist: Path, out: Path, graphlet_size: int, random_graphs: int = 0):
