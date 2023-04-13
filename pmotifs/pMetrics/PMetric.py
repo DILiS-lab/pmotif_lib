@@ -14,16 +14,13 @@ class PMetric(ABC):
 
     EXISTING_METRIC_NAMES = set()
 
-    def __init__(self, name):
+    def __init__(self, name: str):
         if name in PMetric.EXISTING_METRIC_NAMES:
             raise ValueError(f"Metric with name {name} already exists!")
-        self._name = name
-
-        self._pre_compute: PreComputation = {}
-        self._graphlet_metrics: List[RawMetric] = []
+        self._name: str = name
 
     @property
-    def name(self):
+    def name(self) -> str:
         return self._name
 
     @abstractmethod
