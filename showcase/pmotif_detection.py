@@ -54,14 +54,14 @@ def get_metrics_by_graphlet_classes(pgraph: PMotifGraph, graphlet_size: int, met
     )
 
     graphlet_occurrences = pgraph.load_graphlet_pos_zip(graphlet_size)
-    metric_result_lookup = calculate_metrics(pgraph, graphlet_size, metrics, True)
+    metric_results = calculate_metrics(pgraph, graphlet_size, metrics, True)
 
     by_graphlet_class = {}
     for i, g_oc in enumerate(graphlet_occurrences):
         if g_oc.graphlet_class not in by_graphlet_class:
             by_graphlet_class[g_oc.graphlet_class] = {}
-        for metric_name, result in metric_result_lookup.items():
-            by_graphlet_class[g_oc.graphlet_class][metric_name] = result.graphlet_metrics[i]
+        for metric_result in metric_results:
+            by_graphlet_class[g_oc.graphlet_class][metric_result.metric_name] = metric_result.graphlet_metrics[i]
 
     return by_graphlet_class
 

@@ -19,7 +19,7 @@ def process_graphlet_occurrences(
     g: nx.Graph,
     graphlet_occurrences: List[GraphletOccurrence],
     metrics: List[PMetric]
-) -> Dict[str, PMetricResult]:
+) -> List[PMetricResult]:
     """Calculate motif positional metrics"""
 
     result: Dict[str, Dict] = {m.name: {} for m in metrics}
@@ -48,11 +48,14 @@ def process_graphlet_occurrences(
                     result[metric.name]["graphlet_metrics"].append(g_oc_result)
                     pbar.update(1)
 
-    return {
-        m.name: PMetricResult(
-            pre_compute=result[m.name]["pre_compute"], graphlet_metrics=result[m.name]["graphlet_metrics"])
+    return [
+        PMetricResult(
+            metric_name=m.name,
+            pre_compute=result[m.name]["pre_compute"],
+            graphlet_metrics=result[m.name]["graphlet_metrics"],
+        )
         for m in metrics
-    }
+    ]
 
 
 def calculate_metrics(
@@ -60,7 +63,7 @@ def calculate_metrics(
     graphlet_size: int,
     metrics: List[PMetric],
     save_to_disk: bool = True,
-) -> Dict[str, PMetricResult]:
+) -> List[PMetricResult]:
     """When pointed to a graph and a motif file, unzips the motif file, reads the graphs and calculates various
     positional metrics.
     Returns two lookups: Metric Name to Pre-Computation results, and Metric Name to raw metrics.
@@ -72,8 +75,7 @@ def calculate_metrics(
     if save_to_disk:
         metric_output = pmotif_graph.get_pmetric_directory(graphlet_size)
         makedirs(metric_output)
-        for metric_name, metric_result in metric_result_lookup.items():
-            makedirs(metric_output / metric_name)
-            metric_result.save_to_disk(metric_output / metric_name)
+        for metric_result in metric_result_lookup:
+            metric_result.save_to_disk(metric_output)
 
     return metric_result_lookup

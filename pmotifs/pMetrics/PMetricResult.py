@@ -11,14 +11,17 @@ from pmotifs.pMetrics.PMetric import PreComputation, RawMetric
 
 @dataclass
 class PMetricResult:
+    metric_name: str
     pre_compute: PreComputation
     graphlet_metrics: List[RawMetric]
 
     def save_to_disk(self, output: Path):
         """Stores pre_calculations to a specific path."""
+        if output.name != self.metric_name:
+            output = output / self.metric_name
 
         # Store pre_compute
-        os.mkdir(output / "pre_compute")
+        os.makedirs(output / "pre_compute")
         for pre_compute_name, pre_compute_value in self.pre_compute.items():
             with open(output / "pre_compute" / pre_compute_name, "w") as f:
                 json.dump(pre_compute_value, f)
@@ -34,6 +37,7 @@ class PMetricResult:
     def load_from_disk(output: Path):
         """Loads metric results stored at output."""
         return PMetricResult(
+            metric_name=output.name,
             pre_compute=PMetricResult._load_pre_compute(output / "pre_compute"),
             graphlet_metrics=PMetricResult._load_graphlet_metrics(output / "graphlet_metrics"),
         )

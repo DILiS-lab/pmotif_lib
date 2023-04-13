@@ -19,11 +19,11 @@ def main(edgelist: Path, output: Path, graphlet_size: int):
     )
 
     degree_metric = PDegree()
-    metric_result_lookup = calculate_metrics(pmotif_graph, graphlet_size, [degree_metric], True)
+    metric_results = calculate_metrics(pmotif_graph, graphlet_size, [degree_metric], True)
 
     graphlet_occurrences = pmotif_graph.load_graphlet_pos_zip(graphlet_size)
     print(graphlet_occurrences[0].graphlet_class, graphlet_occurrences[0].nodes)
-    print(metric_result_lookup[degree_metric.name].graphlet_metrics[0])
+    print(metric_results[0].graphlet_metrics[0])
 
 
 if __name__ == "__main__":
