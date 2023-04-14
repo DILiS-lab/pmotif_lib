@@ -34,12 +34,12 @@ class PMetricResult:
                 f.write("\n")
 
     @staticmethod
-    def load_from_disk(output: Path):
+    def load_from_disk(output: Path, supress_tqdm: bool = False):
         """Loads metric results stored at output."""
         return PMetricResult(
             metric_name=output.name,
             pre_compute=PMetricResult._load_pre_compute(output / "pre_compute"),
-            graphlet_metrics=PMetricResult._load_graphlet_metrics(output / "graphlet_metrics"),
+            graphlet_metrics=PMetricResult._load_graphlet_metrics(output / "graphlet_metrics", supress_tqdm),
         )
 
     @staticmethod
@@ -60,7 +60,7 @@ class PMetricResult:
             total = int(f.readline().strip())
             pbar = tqdm(
                 f,
-                desc=f"Loading graphlet metrics for {graphlet_metric_file.name}",
+                desc=f"Loading graphlet metrics for {graphlet_metric_file.parent.name}",
                 total=total,
                 disable=supress_tqdm,
             )

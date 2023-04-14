@@ -8,16 +8,14 @@ from tqdm import tqdm
 
 from pmotif_detection.analyse_scripts.report_generator import create
 from pmotif_detection.analyse_scripts.util import add_consolidated_metrics
-from pmotifs.analysis_utilities.loading import Result
+from pmotifs.analysis_utilities.Result import Result
 from pmotifs.config import config
-from pmotifs.analysis_utilities.metric_consolidation import metrics
 
 from pmotif_detection.analyse_scripts.local_scope import LocalScope
 from pmotif_detection.analyse_scripts.global_scope import GlobalScope
 
-
-METRIC_NAMES = metrics.keys()
 OUTPUT_PATH = "out"
+
 
 def execute(output_path: Path, graphlet_size: int, dataset: str, experiment_out: str):
     makedirs(output_path / "local", exist_ok=True)
@@ -26,11 +24,11 @@ def execute(output_path: Path, graphlet_size: int, dataset: str, experiment_out:
     print("Loading result")
     r = Result.load_result(config.DATASET_DIRECTORY / dataset, config.EXPERIMENT_OUT / experiment_out, graphlet_size)
     print("Consolidating metrics")
-    r = add_consolidated_metrics(r)
+    add_consolidated_metrics(r)
 
     print("Processing Local Analysis")
     local_scope = LocalScope(r)
-    for metric_name in tqdm(METRIC_NAMES, desc="Metric"):
+    for metric_name in tqdm(r.consolidated_metrics, desc="Metric"):
         makedirs(output_path / "local" / metric_name, exist_ok=True)
         # Repeats the occurrence percentiles plot without percentile highlights
         # fig = local_scope.plot_metric_distribution(metric_name)
@@ -54,7 +52,7 @@ def execute(output_path: Path, graphlet_size: int, dataset: str, experiment_out:
         "motifs",
     )
 
-    for metric_name in tqdm(METRIC_NAMES, desc="Metric"):
+    for metric_name in tqdm(r.consolidated_metrics, desc="Metric"):
         makedirs(output_path / "global" / metric_name, exist_ok=True)
         significance = global_scope.pmotif_analysis_result(metric_name)
         significance.to_csv(output_path / "global" / metric_name / "significance.csv")

@@ -38,6 +38,12 @@ class Result:
             for r in self.p_metric_results
         }
 
+        self._consolidated_metrics: List[str] = []
+
+    @property
+    def consolidated_metrics(self) -> List[str]:
+        return self._consolidated_metrics
+
     def get_p_metric_result(self, name: str) -> PMetricResult:
         return self._p_metric_result_lookup[name]
 
@@ -57,6 +63,7 @@ class Result:
         self.positional_metric_df[consolidate_name] = self.positional_metric_df[metric_name].apply(
             lambda x: consolidate_method(x, p_metric_result.pre_compute)
         )
+        self._consolidated_metrics.append(consolidate_name)
 
     @staticmethod
     def load_result(
@@ -80,7 +87,7 @@ class Result:
         pmetric_output_directory = pgraph.get_pmetric_directory(graphlet_size)
 
         p_metric_results = [
-            PMetricResult.load_from_disk(pmetric_output_directory / content)
+            PMetricResult.load_from_disk(pmetric_output_directory / content, supress_tqdm)
             for content in os.listdir(str(pmetric_output_directory))
             if (pmetric_output_directory / content).is_dir()
         ]

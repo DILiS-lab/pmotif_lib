@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from statistics import quantiles
 
-from pmotifs.analysis_utilities.loading import Result
+from pmotifs.analysis_utilities.Result import Result
 from pmotifs.graphlet_representation import graphlet_class_to_name
 
 from pmotif_detection.analyse_scripts.util import get_graphlet_classes

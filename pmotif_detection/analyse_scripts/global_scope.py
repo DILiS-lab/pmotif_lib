@@ -7,13 +7,18 @@ from tqdm import tqdm
 from scipy.stats import mannwhitneyu
 from statistics import median
 
-from pmotifs.analysis_utilities.loading import Result
+from pmotifs.analysis_utilities.Result import Result
 from pmotifs.config import WORKERS
 from pmotifs.graphlet_representation import graphlet_class_to_name, graphlet_classes_from_size
 from pmotifs.PMotifGraph import PMotifGraph
 from pmotifs.graphlet_representation import GRAPHLET_CLASS_NAME_LOOKUP
 
-from pmotif_detection.analyse_scripts.util import to_graphlet_class_frequency, get_zscore, extract_metric_distribution, add_consolidated_metrics
+from pmotif_detection.analyse_scripts.util import (
+    to_graphlet_class_frequency,
+    get_zscore,
+    extract_metric_distribution,
+    add_consolidated_metrics,
+)
 
 
 class GlobalScope:
