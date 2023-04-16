@@ -28,7 +28,7 @@ preamble_lines = [
     "#!/bin/bash",
     "#SBATCH -A renard",
     "#SBATCH --time=40:00:00",
-    "#SBATCH --cpus-per-task=8",
+    "#SBATCH --cpus-per-task=1",
     "#SBATCH --mem-per-cpu=150G",
 ]
 
