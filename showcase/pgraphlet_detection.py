@@ -2,11 +2,11 @@
 calculates each metric in `metrics` for each graphlet occurrence."""
 from pathlib import Path
 
-from pmotifs.PMotifGraph import PMotifGraph
+from pmotifs.p_motif_graph import PMotifGraph
 from pmotifs.config import DATASET_DIRECTORY
 from pmotifs.gtrieScanner.wrapper import run_gtrieScanner
-from pmotifs.pMetrics.PDegree import PDegree
-from pmotifs.positional_metrics import calculate_metrics
+from pmotifs.p_metric.p_degree import PDegree
+from pmotifs.p_metric.metric_processing import calculate_metrics
 
 
 def main(edgelist: Path, output: Path, graphlet_size: int):

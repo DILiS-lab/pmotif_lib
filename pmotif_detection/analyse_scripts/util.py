@@ -7,11 +7,11 @@ from pmotifs.graphlet_representation import (
     get_graphlet_size_from_class,
     graphlet_classes_from_size,
 )
-from pmotifs.pMetrics.metric_consolidation import metrics
-from pmotifs.analysis_utilities.Result import Result
+from pmotifs.p_metric.metric_consolidation import metrics
+from pmotifs.result_transformer import ResultTransformer
 
 
-def add_consolidated_metrics(result: Result) -> Result:
+def add_consolidated_metrics(result: ResultTransformer) -> ResultTransformer:
     for metric_name, consolidation_metric_list in metrics.items():
         for consolidation_name, consolidation_method in consolidation_metric_list:
             result.consolidate_metric(

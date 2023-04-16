@@ -2,7 +2,7 @@
 from pathlib import Path
 from statistics import mean, stdev
 
-from pmotifs.PMotifGraph import PMotifGraph, PMotifGraphWithRandomization
+from pmotifs.p_motif_graph import PMotifGraph, PMotifGraphWithRandomization
 from pmotifs.config import DATASET_DIRECTORY
 from pmotifs.graphlet_representation import graphlet_class_to_name
 from pmotifs.gtrieScanner.wrapper import run_gtrieScanner

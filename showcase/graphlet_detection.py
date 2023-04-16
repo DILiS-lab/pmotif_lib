@@ -2,7 +2,7 @@
 grouped by their isomorphic class (returns all graphlet occurrences)"""
 from pathlib import Path
 
-from pmotifs.PMotifGraph import PMotifGraph
+from pmotifs.p_motif_graph import PMotifGraph
 from pmotifs.config import DATASET_DIRECTORY
 from pmotifs.gtrieScanner.wrapper import run_gtrieScanner
 

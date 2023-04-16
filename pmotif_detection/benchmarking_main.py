@@ -1,26 +1,26 @@
+"""Script to run a p-motif detection with logging of runtimes for benchmark purposes."""
 import argparse
 import shutil
 from os import makedirs
 from pathlib import Path
-from typing import List
-
-import networkx as nx
+from typing import List, Dict
+import time
+import logging
 from tqdm import tqdm
+import networkx as nx
 
-import pmotifs.pMetrics.PMetric as PMetric
-from pmotifs.PMotifGraph import PMotifGraph, PMotifGraphWithRandomization
+from pmotifs.p_metric.p_metric import PMetric
+from pmotifs.p_motif_graph import PMotifGraph, PMotifGraphWithRandomization
 from pmotifs.config import (
     GTRIESCANNER_EXECUTABLE,
     EXPERIMENT_OUT,
     DATASET_DIRECTORY,
 )
 from pmotifs.gtrieScanner.wrapper import run_gtrieScanner
-from pmotifs.pMetrics.PAnchorNodeDistance import PAnchorNodeDistance
-from pmotifs.pMetrics.PDegree import PDegree
-from pmotifs.pMetrics.PGraphModuleParticipation import PGraphModuleParticipation
-from pmotifs.positional_metrics import calculate_metrics
-import time
-import logging
+from pmotifs.p_metric.p_anchor_node_distance import PAnchorNodeDistance
+from pmotifs.p_metric.p_degree import PDegree
+from pmotifs.p_metric.p_graph_module_participation import PGraphModuleParticipation
+from pmotifs.p_metric.metric_processing import calculate_metrics
 
 
 def assert_validity(pmotif_graph: PMotifGraph):
@@ -39,13 +39,15 @@ def assert_validity(pmotif_graph: PMotifGraph):
 def process_graph(
     pmotif_graph: PMotifGraph,
     graphlet_size: int,
-    metrics: List[PMetric.PMetric],
+    metrics: List[PMetric],
     check_validity: bool = True,
-):
+) -> Dict[str, float]:
+    """Run a graphlet detection and metric calculation (if any) on the given graph measuring
+    runtimes."""
     if check_validity:
         assert_validity(pmotif_graph)
 
-    start = time.time()
+    graphlet_runtime_start = time.time()
     run_gtrieScanner(
         graph_edgelist=pmotif_graph.get_graph_path(),
         gtrieScanner_executable=GTRIESCANNER_EXECUTABLE,
@@ -53,14 +55,14 @@ def process_graph(
         graphlet_size=graphlet_size,
         output_directory=pmotif_graph.get_graphlet_directory(),
     )
-    graphlet_runtime = time.time() - start
+    graphlet_runtime = time.time() - graphlet_runtime_start
 
     if len(metrics) == 0:
-        return
+        return {}
 
-    start = time.time()
+    metric_runtime_start = time.time()
     calculate_metrics(pmotif_graph, graphlet_size, metrics, True)
-    metric_runtime = time.time() - start
+    metric_runtime = time.time() - metric_runtime_start
     return {
         "graphlet_runtime": graphlet_runtime,
         "metric_runtime": metric_runtime,
@@ -68,27 +70,28 @@ def process_graph(
 
 
 def main(edgelist: Path, out: Path, graphlet_size: int, random_graphs: int = 0):
-    degree = PDegree()
-    anchor_node = PAnchorNodeDistance()
-    graph_module_participation = PGraphModuleParticipation()
+    """Create three p-Metrics, generate random graphs from the original graph, and
+    run a p-motif detection on the graphs (or a graphlet-detection if random_graphs=0),
+    collecting runtime logs."""
+    metrics = [PDegree(), PAnchorNodeDistance(), PGraphModuleParticipation()]
 
     pmotif_graph = PMotifGraph(edgelist, out)
 
     log_r = process_graph(
         pmotif_graph,
         graphlet_size,
-        [degree, anchor_node, graph_module_participation],
+        metrics,
     )
     for runtime_name, runtime in log_r.items():
-        logger.info(f"{runtime_name}: {runtime}")
+        logger.info("%s: %s", runtime_name, runtime)
 
-    start = time.time()
+    random_creation_runtime_start = time.time()
     randomized_pmotif_graph = PMotifGraphWithRandomization.create_from_pmotif_graph(
         pmotif_graph, random_graphs
     )
-    random_creation_runtime = time.time() - start
+    random_creation_runtime = time.time() - random_creation_runtime_start
     logger.info(
-        f"Random Creation Runtime: {random_creation_runtime} (created {random_graphs})"
+        "Random Creation Runtime: %s (created %s)", random_creation_runtime, random_graphs
     )
 
     del pmotif_graph
@@ -103,11 +106,11 @@ def main(edgelist: Path, out: Path, graphlet_size: int, random_graphs: int = 0):
         log_r = process_graph(
             swapped_graph,
             graphlet_size,
-            [degree, anchor_node, graph_module_participation],
+            metrics,
             check_validity=False,
         )
         for runtime_name, runtime in log_r.items():
-            logger.info(f"Random {i}, {runtime_name}: {runtime}")
+            logger.info("Random %s, %s: %s", i, runtime_name, runtime)
 
 
 if __name__ == "__main__":
@@ -131,8 +134,10 @@ if __name__ == "__main__":
     makedirs(OUT, exist_ok=True)
     makedirs("benchmarking_logs", exist_ok=True)
 
+    logfile = f"benchmarking_logs/{BENCHMARKING_RUN}_{GRAPH_EDGELIST.stem}_{GRAPHLET_SIZE}_" \
+              f"{RANDOM_GRAPHS}.benchmark"
     logging.basicConfig(
-        filename=f"benchmarking_logs/{BENCHMARKING_RUN}_{GRAPH_EDGELIST.stem}_{GRAPHLET_SIZE}_{RANDOM_GRAPHS}.benchmark",
+        filename=logfile,
         filemode="a",
         format="%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s",
         datefmt="%H:%M:%S",
@@ -141,8 +146,8 @@ if __name__ == "__main__":
 
     logger = logging.getLogger("benchmark")
 
-    start = time.time()
+    total_runtime_start = time.time()
     main(GRAPH_EDGELIST, OUT, GRAPHLET_SIZE, RANDOM_GRAPHS)
-    total_runtime = time.time() - start
-    logger.info(f"Total Runtime: {total_runtime}")
+    total_runtime = time.time() - total_runtime_start
+    logger.info("Total Runtime: %s", total_runtime)
     shutil.rmtree(EXPERIMENT_OUT / "benchmarking")

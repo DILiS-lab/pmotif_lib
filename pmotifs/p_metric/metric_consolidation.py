@@ -2,14 +2,16 @@
 from statistics import mean
 from typing import List, Dict, Tuple
 
-from pmotifs.analysis_utilities.Result import ConsolidationMethod
-from pmotifs.pMetrics.PAnchorNodeDistance import PAnchorNodeDistance
-from pmotifs.pMetrics.PDegree import PDegree
-from pmotifs.pMetrics.PGraphModuleParticipation import PGraphModuleParticipation
-from pmotifs.pMetrics.PMetric import RawMetric, PreComputation
+from pmotifs.result_transformer import ConsolidationMethod
+from pmotifs.p_metric.p_anchor_node_distance import PAnchorNodeDistance
+from pmotifs.p_metric.p_degree import PDegree
+from pmotifs.p_metric.p_graph_module_participation import PGraphModuleParticipation
+from pmotifs.p_metric.p_metric import RawMetric, PreComputation
 
 
 def degree_consolidation(raw_metric: RawMetric, pre_compute: PreComputation) -> float:
+    """Consolidate PDegree. PDegree already is a single number per graphlet occurrence,
+    no additional consolidation needed."""
     del pre_compute
     return raw_metric
 
@@ -17,24 +19,34 @@ def degree_consolidation(raw_metric: RawMetric, pre_compute: PreComputation) -> 
 def max_normalized_anchor_hop_distances(
     raw_metric: RawMetric, pre_compute: PreComputation
 ) -> float:
+    """Consolidate PAnchorNodeDistance. Normalize the distances by closeness centrality
+    and return the highest distance."""
     return max(_get_normalized_anchor_hop_distances(raw_metric, pre_compute))
 
 
 def min_normalized_anchor_hop_distances(
     raw_metric: RawMetric, pre_compute: PreComputation
 ) -> float:
+    """Consolidate PAnchorNodeDistance. Normalize the distances by closeness centrality
+    and return the lowest distance."""
     return min(_get_normalized_anchor_hop_distances(raw_metric, pre_compute))
 
 
 def mean_normalized_anchor_hop_distances(
     raw_metric: RawMetric, pre_compute: PreComputation
 ) -> float:
+    """Consolidate PAnchorNodeDistance. Normalize the distances by closeness centrality
+    and return the mean distance."""
     return mean(_get_normalized_anchor_hop_distances(raw_metric, pre_compute))
 
 
 def _get_normalized_anchor_hop_distances(
     raw_metric: RawMetric, pre_compute: PreComputation
 ) -> List[float]:
+    """Normalize the distances by closeness centrality of the anchor nodes.
+    Some nodes are more central than others, making such normalization necessary to make
+    the distances to different anchors comparable.
+    """
     anchor_nodes = pre_compute["anchor_nodes"]
     closeness_centrality = pre_compute["closeness_centrality"]
 
@@ -47,6 +59,8 @@ def _get_normalized_anchor_hop_distances(
 def graph_module_participation_ratio(
     raw_metric: RawMetric, pre_compute: PreComputation
 ) -> float:
+    """Consolidate PGraphModuleParticipation. Return a ratio of modules participated by the graphlet
+    compared to all existing modules."""
     total_module_count = len(pre_compute["graph_modules"])
     return len(raw_metric) / total_module_count
 

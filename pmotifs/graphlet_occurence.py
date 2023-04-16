@@ -1,4 +1,4 @@
-from math import sqrt
+"""Class to encapsulate an induced subgraph and its isomorphic class."""
 from dataclasses import dataclass
 from typing import List
 
@@ -12,7 +12,8 @@ class GraphletOccurrence:
 
     @property
     def size(self):
-        return int(sqrt(len(self.graphlet_class)))
+        """Returns the size of the induced subgraph."""
+        return len(self.nodes)
 
     def __hash__(self):
         return hash((self.graphlet_class, tuple(self.nodes)))

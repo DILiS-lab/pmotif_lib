@@ -1,82 +1,102 @@
+"""Utilities to plot graphs in the context of graphlets."""
+import json
+from typing import List, Dict
+
 import networkx as nx
 import pandas as pd
-import json
+from matplotlib.axes import Axes
 
-from pmotifs.PMotifGraph import PMotifGraph
+from pmotifs.p_motif_graph import PMotifGraph
 
 
 def get_kamada_kawai_layout(pmotif_graph: PMotifGraph):
-    if not (pmotif_graph.output_directory / "kamada_kawai_layout.json").is_file():
+    """Return a kamda kawai layout of the given graph.
+    Load it from disk if present, create it on disk if not."""
+    layout_output_path = pmotif_graph.output_directory / "kamada_kawai_layout.json"
+    if not layout_output_path.is_file():
         nx_g = pmotif_graph.load_graph()
-        pos = _prepare_kamada_kawai_layout_with_multiple_components(nx_g)
+        pos = _kamada_kawai_layout_with_multiple_components(nx_g)
 
         # Cast nd-Array type (from coords) to json serializable list
         pos = {k: list(v) for k, v in pos.items()}
 
-        with open(pmotif_graph.output_directory / "kamada_kawai_layout.json", "w") as f:
-            json.dump(pos, f)
+        with open(layout_output_path, "w", encoding="utf-8") as layout_output:
+            json.dump(pos, layout_output)
 
-    with open(pmotif_graph.output_directory / "kamada_kawai_layout.json", "r") as f:
-        return json.load(f)
+    with open(layout_output_path, "r", encoding="utf-8") as layout_output:
+        return json.load(layout_output)
 
 
-def _prepare_kamada_kawai_layout_with_multiple_components(nx_g):
-    pos_df = pd.DataFrame(index=nx_g.nodes(), columns=nx_g.nodes())
+def _kamada_kawai_layout_with_multiple_components(graph: nx.Graph) -> Dict[str, List[float]]:
+    """Create a kamada kawai layout,
+    placing disconnected components at maximum distance from center"""
+    pos_df = pd.DataFrame(index=graph.nodes(), columns=graph.nodes())
     max_dist = -1
-    for row, data in nx.shortest_path_length(nx_g):
+    for row, data in nx.shortest_path_length(graph):
         for col, dist in data.items():
             pos_df.loc[row, col] = dist
             max_dist = max(max_dist, dist)
 
     pos_df = pos_df.fillna(max_dist / 2 + 2)
 
-    return nx.kamada_kawai_layout(nx_g, dist=pos_df.to_dict())
+    return nx.kamada_kawai_layout(graph, dist=pos_df.to_dict())
 
 
-def highlight_motif(nx_g, motif, ax, pos):
-    subgraph = nx.induced_subgraph(nx_g, motif)
+def highlight_nodes(graph: nx.Graph, nodes: List[str], axis: Axes, pos: Dict[str, List[float]]):
+    """Highlight a given set of nodes in a color on the given axes."""
+    subgraph = nx.induced_subgraph(graph, nodes)
 
     nx.draw_networkx_nodes(
-        nx_g,
+        graph,
         nodelist=subgraph.nodes,
         node_color="r",
         pos=pos,
-        ax=ax,
+        ax=axis,
         node_size=20,
     )
     nx.draw_networkx_labels(
-        nx_g,
+        graph,
         labels={node: node for node in subgraph.nodes},
         pos=pos,
-        ax=ax,
+        ax=axis,
         font_size=6,
         font_color="b",
     )
     nx.draw_networkx_edges(
-        nx_g,
+        graph,
         pos=pos,
         edgelist=subgraph.edges,
-        ax=ax,
+        ax=axis,
         edge_color="r",
     )
 
 
-def plot_graph_with_motif_highlight(nx_g, motifs, pos, ax, title=""):
-    nx.draw(nx_g, pos=pos, ax=ax, node_size=20)
+def plot_graph_with_multiple_node_set_highlights(
+    graph: nx.Graph,
+    node_sets: List[List[str]],
+    pos: Dict[str, List[float]],
+    axis: Axes,
+    title: str = "",
+):
+    """Draw a given graph onto a given axis using a given position lookup,
+    but highlight given sets of nodes in a color."""
+    nx.draw(graph, pos=pos, ax=axis, node_size=20)
 
-    for m in motifs:
-        highlight_motif(nx_g, m, ax, pos)
+    for nodes in node_sets:
+        highlight_nodes(graph, nodes, axis, pos)
 
-    ax.set_title(title)
+    axis.set_title(title)
 
 
-def get_zommed_graph(nx_g, nodes, node_range=3):
+def get_zommed_graph(graph: nx.Graph, nodes: List[str], node_range: int = 3) -> nx.Graph:
+    """Reduce given graph to a given set of nodes, plotting ony the nodes and neighbors in
+    a radius of node_range."""
     relevant_nodes = []
-    for n in nodes:
-        neighbors = nx.descendants_at_distance(nx_g, n, node_range)
+    for node in nodes:
+        neighbors = nx.descendants_at_distance(graph, node, node_range)
         relevant_nodes.extend(neighbors)
-        relevant_nodes.append(n)
+        relevant_nodes.append(node)
 
-    subgraph = nx.induced_subgraph(nx_g, relevant_nodes)
+    subgraph = nx.induced_subgraph(graph, relevant_nodes)
 
     return subgraph

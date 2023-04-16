@@ -5,13 +5,13 @@ from typing import List
 
 from scipy.stats import mannwhitneyu
 
-from pmotifs.PMotifGraph import PMotifGraph, PMotifGraphWithRandomization
+from pmotifs.p_motif_graph import PMotifGraph, PMotifGraphWithRandomization
 from pmotifs.config import DATASET_DIRECTORY
 from pmotifs.graphlet_representation import graphlet_class_to_name
 from pmotifs.gtrieScanner.wrapper import run_gtrieScanner
-from pmotifs.pMetrics.PDegree import PDegree
-from pmotifs.pMetrics.PMetric import PMetric
-from pmotifs.positional_metrics import calculate_metrics
+from pmotifs.p_metric.p_degree import PDegree
+from pmotifs.p_metric.p_metric import PMetric
+from pmotifs.p_metric.metric_processing import calculate_metrics
 
 
 def main(edgelist: Path, output: Path, graphlet_size: int):

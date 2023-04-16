@@ -1,3 +1,4 @@
+"""Configuration constants."""
 from pathlib import Path
 
 BASE_PATH = Path(__file__).absolute().parent.parent.parent.parent

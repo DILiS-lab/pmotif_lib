@@ -1,10 +1,15 @@
-import networkx as nx
+"""Utility to call a gtrieScanner executable from python."""
+# gtrieScanner violates snake_case, but is the official name of the wrapped utility
+# For complete wrapping, the argument count needs to stay the same
+# Therefore, we exclude those cases from py-linting:
+# pylint: disable=invalid-name, too-many-arguments
 import os
-from subprocess import Popen, PIPE
 from pathlib import Path
+from subprocess import Popen, PIPE
 import zipfile
 
 from pmotifs.config import GTRIESCANNER_EXECUTABLE
+from pmotifs.gtrieScanner.graph_io import read_edgelist
 
 
 def run_gtrieScanner(
@@ -21,17 +26,12 @@ def run_gtrieScanner(
     out_dir = output_directory / str(graphlet_size)
     os.makedirs(out_dir)
 
-    # Make sure network is in gTrie-readable format
-    g = nx.read_edgelist(
-        str(graph_edgelist),
-        data=False,
-        create_using=nx.Graph,  # No repeated edges
-    )
-    g.remove_edges_from(nx.selfloop_edges(g))
+    graph = read_edgelist(graph_edgelist)
 
-    if "0" in g.nodes:
+    if "0" in graph.nodes:
         raise IndexError(
-            "Network contains a node with index 0! gtrieScanner only accepts node indices starting from 1!"
+            "Network contains a node with index 0! "
+            "gtrieScanner only accepts node indices starting from 1!"
         )
 
     # Build GTrieScanner command
@@ -56,12 +56,12 @@ def run_gtrieScanner(
     command_parts = [str(p) for p in command_parts]
 
     # Run gtrieScanner
-    p = Popen(
+    with Popen(
         command_parts,
         stdout=PIPE,
         stderr=PIPE,
-    )
-    p.wait()
+    ) as p:
+        p.wait()
 
     # Store motifs in max compressed zip for space efficiency
     with zipfile.ZipFile(

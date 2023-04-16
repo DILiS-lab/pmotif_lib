@@ -1,8 +1,10 @@
+"""Script to quickly generate an instruction file for slurm's sbtach command
+to run p-motif detection on multiple datasets and different graphlet sizes."""
 from pathlib import Path
 
 LOG_BASE = "/hpi/fs00/home/tim.garrels/masterthesis/logs/data_collection/"
 
-datasets = [
+DATASETS = [
     # "com-dblp.ungraph.txt",
     "kaggle_so_tags.edgelist",
     "kaggle_star_wars.edgelist",
@@ -49,18 +51,10 @@ datasets = [
     "human_brain_development_cutoff_0.772.edgelist",
 ]
 
-graphlet_sizes = [3, 4]
-random_graphs = 1000
+GRAPHLET_SIZES = [3, 4]
+RANDOM_GRAPHS = 1000
 
-
-def generate_line(edgelist_path: Path, graphlet_size: int, random_graphs: int):
-    log_path = LOG_BASE + str(graphlet_size) + "/" + edgelist_path.name
-    return f"./run_data_collection.sh {log_path} {str(edgelist_path)} {graphlet_size} {random_graphs}"
-
-
-total_jobs = len(datasets) * len(graphlet_sizes)
-
-preamble_lines = [
+PREAMBLE_LINES = [
     "#!/bin/bash",
     "#SBATCH -A renard",
     "#SBATCH --time=40:00:00",
@@ -68,20 +62,33 @@ preamble_lines = [
     "#SBATCH --mem-per-cpu=150G",
 ]
 
-random_graphs_for_dataset = {}
-for graphlet_size in graphlet_sizes:
-    with open(f"slurm_{graphlet_size}.batch", "w") as f:
-        for l in preamble_lines:
-            f.write(l)
-            f.write("\n")
 
-        f.write("\n")
+def generate_line(edgelist: Path, graphlet_size: int, random_graphs: int):
+    """Create a line for the sbatch file, representing a single p-motif detection task."""
+    log_path = LOG_BASE + str(graphlet_size) + "/" + edgelist.name
+    return f"./run_data_collection.sh {log_path} {str(edgelist)} {graphlet_size} {random_graphs}"
 
-        for d in datasets:
-            _random_graphs = random_graphs_for_dataset.get(d, 1000)
 
-            f.write(generate_line(Path(d), graphlet_size, _random_graphs))
-            f.write("\n")
+def main():
+    """Generate sbatch file."""
+    random_graphs_for_dataset = {}
+    for graphlet_size in GRAPHLET_SIZES:
+        with open(f"slurm_{graphlet_size}.batch", "w", encoding="utf-8") as sbtach_file:
+            for line in PREAMBLE_LINES:
+                sbtach_file.write(line)
+                sbtach_file.write("\n")
 
-            random_graphs_for_dataset[d] = -1
-        # f.write("wait\n")
+            sbtach_file.write("\n")
+
+            for dataset in DATASETS:
+                _random_graphs = random_graphs_for_dataset.get(dataset, 1000)
+
+                sbtach_file.write(generate_line(Path(dataset), graphlet_size, _random_graphs))
+                sbtach_file.write("\n")
+
+                random_graphs_for_dataset[dataset] = -1
+            # sbtach_file.write("wait\n")
+
+
+if __name__ == "__main__":
+    main()

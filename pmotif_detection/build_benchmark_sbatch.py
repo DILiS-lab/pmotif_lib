@@ -1,8 +1,11 @@
+"""Script to quickly generate an instruction file for slurm's sbtach command
+to benchmark p-motif detection on multiple datasets and different graphlet sizes and in
+multiple runs to be robust against fluctuations."""
 from pathlib import Path
 
 LOG_BASE = "/hpi/fs00/home/tim.garrels/masterthesis/logs/benchmarking_logs/"
 
-datasets = [
+DATASETS = [
     "kaggle_so_tags.edgelist",
     "kaggle_star_wars.edgelist",
     "yeastInter_st.txt",
@@ -13,18 +16,10 @@ datasets = [
     "human_brain_development_cutoff_0.772.edgelist",
 ]
 
-graphlet_sizes = [3, 4]
-benchmarking_runs = [1, 2, 3, 4, 5]
+GRAPHLET_SIZES = [3, 4]
+BENCHMARKING_RUNS = [1, 2, 3, 4, 5]
 
-
-def generate_line(edgelist_path: Path, graphlet_size: int, benchmarking_run: int):
-    log_path = LOG_BASE + str(graphlet_size) + "/" + edgelist_path.name
-    return f"./run_benchmark.sh {log_path} {str(edgelist_path)} {graphlet_size} {benchmarking_run}"
-
-
-total_jobs = len(datasets) * len(graphlet_sizes) * len(benchmarking_runs)
-
-preamble_lines = [
+PREAMBLE_LINES = [
     "#!/bin/bash",
     "#SBATCH -A renard",
     "#SBATCH --time=40:00:00",
@@ -33,15 +28,27 @@ preamble_lines = [
 ]
 
 
-with open(f"slurm_benchmark.batch", "w") as f:
-    for l in preamble_lines:
-        f.write(l)
-        f.write("\n")
+def generate_line(edgelist_path: Path, graphlet_size: int, benchmarking_run: int):
+    """Create a line for the sbatch file, representing a single benchmarking task."""
+    log_path = LOG_BASE + str(graphlet_size) + "/" + edgelist_path.name
+    return f"./run_benchmark.sh {log_path} {str(edgelist_path)} {graphlet_size} {benchmarking_run}"
 
-    f.write("\n")
 
-    for graphlet_size in graphlet_sizes:
-        for d in datasets:
-            for benchmarking_run in benchmarking_runs:
-                f.write(generate_line(Path(d), graphlet_size, benchmarking_run))
-                f.write("\n")
+def main():
+    """Generate sbatch file."""
+    with open("slurm_benchmark.batch", "w", encoding="utf-8") as sbtach_file:
+        for line in PREAMBLE_LINES:
+            sbtach_file.write(line)
+            sbtach_file.write("\n")
+
+        sbtach_file.write("\n")
+
+        for graphlet_size in GRAPHLET_SIZES:
+            for dataset in DATASETS:
+                for benchmarking_run in BENCHMARKING_RUNS:
+                    sbtach_file.write(generate_line(Path(dataset), graphlet_size, benchmarking_run))
+                    sbtach_file.write("\n")
+
+
+if __name__ == "__main__":
+    main()

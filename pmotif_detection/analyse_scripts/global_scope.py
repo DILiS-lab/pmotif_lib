@@ -1,19 +1,21 @@
+"""Perform analyses with a focus on the comparison of the original graphs properties
+with the properties of generated random graphs."""
 from multiprocessing import Pool
-
-import pandas as pd
+from statistics import median
 from typing import Dict, List
-import matplotlib.pyplot as plt
 from tqdm import tqdm
 from scipy.stats import mannwhitneyu
-from statistics import median
 
-from pmotifs.analysis_utilities.Result import Result
+import matplotlib.pyplot as plt
+import pandas as pd
+
+from pmotifs.result_transformer import ResultTransformer
 from pmotifs.config import WORKERS
 from pmotifs.graphlet_representation import (
     graphlet_class_to_name,
     graphlet_classes_from_size,
 )
-from pmotifs.PMotifGraph import PMotifGraph
+from pmotifs.p_motif_graph import PMotifGraph
 from pmotifs.graphlet_representation import GRAPHLET_CLASS_NAME_LOOKUP
 
 from pmotif_detection.analyse_scripts.util import (
@@ -25,10 +27,10 @@ from pmotif_detection.analyse_scripts.util import (
 
 
 class GlobalScope:
-    """Creates an analysis utility object focussed on comparisons against a random baseline,
+    """Create an analysis utility object focussed on comparisons against a random baseline,
     handling data loading, refining, and exposes special analysis methods"""
 
-    def __init__(self, result: Result):
+    def __init__(self, result: ResultTransformer):
         self.result = result
 
         self.graphlet_classes = graphlet_classes_from_size(self.result.graphlet_size)
@@ -38,9 +40,9 @@ class GlobalScope:
         self._pmotif_analysis_cache = {}
 
     def _load_randomized_results(self) -> Dict[PMotifGraph, pd.DataFrame]:
-        """Loads the results of the computations on the random graphs
+        """Load the results of the computations on the random graphs
         generated from the graph which the original result was based on"""
-        randomized_results = Result.load_randomized_results(
+        randomized_results = ResultTransformer.load_randomized_results(
             self.result.pmotif_graph,
             self.result.graphlet_size,
             supress_tqdm=True,
@@ -56,8 +58,8 @@ class GlobalScope:
         return randomized_results
 
     @staticmethod
-    def _consolidate_randomized_results(randomized_results: List[Result]):
-        """Consolidates the positional metrics in all given Results in a parallelized way"""
+    def _consolidate_randomized_results(randomized_results: List[ResultTransformer]):
+        """Consolidate the positional metrics in all given Results in a parallelized way"""
         if WORKERS == 1:
             return [
                 add_consolidated_metrics(r)
@@ -67,20 +69,21 @@ class GlobalScope:
                 )
             ]
 
-        with Pool(processes=WORKERS) as p:
+        with Pool(processes=WORKERS) as pool:
             pbar = tqdm(
                 randomized_results,
                 desc="Consolidating metrics on randomized results",
             )
-            return p.map(
+            return pool.map(
                 add_consolidated_metrics,
                 pbar,
                 chunksize=10,
             )
 
     def plot_graphlet_frequency(self):
-        """Classic Motif Analysis, compare the frequency of each graphlet class in the original graph
-        against the frequency distribution found in all random graphs"""
+        """Classic Motif Analysis, compare
+        the frequency of each graphlet class in the original graph against
+        the frequency distribution found in all random graphs"""
         original_frequencies = to_graphlet_class_frequency(
             self.result.positional_metric_df
         )
@@ -92,26 +95,26 @@ class GlobalScope:
 
         fig, axes = plt.subplots(1, len(self.graphlet_classes), figsize=(10, 5))
         for i, graphlet_class in enumerate(self.graphlet_classes):
-            ax = axes[i]
+            axis = axes[i]
 
             original_value = original_frequencies[graphlet_class]
             distribution = random_frequencies[graphlet_class]
             z_score = get_zscore(original_value, distribution)
 
-            distribution.plot.hist(ax=ax, label="Expected Distribution")
+            distribution.plot.hist(ax=axis, label="Expected Distribution")
 
-            ax.axvline(
+            axis.axvline(
                 original_value,
                 color="tab:orange",
                 label=f"Original (zscore={round(z_score, 2)})",
             )
-            ax.set_title(GRAPHLET_CLASS_NAME_LOOKUP[graphlet_class])
-            ax.legend(loc="upper right")
+            axis.set_title(GRAPHLET_CLASS_NAME_LOOKUP[graphlet_class])
+            axis.legend(loc="upper right")
         return fig
 
     def get_pmotif_analysis_data(self, metric_name: str) -> Dict[str, pd.DataFrame]:
-        """Performs the pairwise mann whitney u tests between the original graph and each random graph
-        Caches results!"""
+        """Perform the pairwise mann whitney u tests between the original graph and
+        each random graph. Cache results!"""
         if self._pmotif_analysis_cache.get(metric_name, None) is None:
             original_distribution = extract_metric_distribution(
                 self.result.positional_metric_df, metric_name
@@ -193,23 +196,23 @@ class GlobalScope:
             1, len(self.graphlet_classes), figsize=(len(self.graphlet_classes) * 5, 5)
         )
         for i, graphlet_class in enumerate(self.graphlet_classes):
-            ax = axes[i]
+            axis = axes[i]
             if graphlet_class not in pmotif_analysis_data.keys():
-                ax.set_title(
+                axis.set_title(
                     f"{graphlet_class_to_name(graphlet_class)} not present in original graph!"
                 )
                 continue
 
-            pmotif_analysis_data[graphlet_class][["sample-size"]].plot.hist(ax=ax)
+            pmotif_analysis_data[graphlet_class][["sample-size"]].plot.hist(ax=axis)
 
-            ax.axvline(
+            axis.axvline(
                 pmotif_analysis_data[graphlet_class]["original-size"][0],
                 label="original",
                 color="tab:orange",
             )
-            ax.set_title(graphlet_class_to_name(graphlet_class))
-            ax.legend()
-            ax.set_xlabel(f"# of {graphlet_class_to_name(graphlet_class)} occurrences")
+            axis.set_title(graphlet_class_to_name(graphlet_class))
+            axis.legend()
+            axis.set_xlabel(f"# of {graphlet_class_to_name(graphlet_class)} occurrences")
         fig.suptitle("sample-size")
 
         return fig
@@ -223,23 +226,23 @@ class GlobalScope:
             1, len(self.graphlet_classes), figsize=(len(self.graphlet_classes) * 5, 5)
         )
         for i, graphlet_class in enumerate(self.graphlet_classes):
-            ax = axes[i]
+            axis = axes[i]
             if graphlet_class not in pmotif_analysis_data.keys():
-                ax.set_title(
+                axis.set_title(
                     f"{graphlet_class_to_name(graphlet_class)} not present in original graph!"
                 )
                 continue
 
-            pmotif_analysis_data[graphlet_class][["sample-median"]].plot.hist(ax=ax)
+            pmotif_analysis_data[graphlet_class][["sample-median"]].plot.hist(ax=axis)
 
-            ax.axvline(
+            axis.axvline(
                 pmotif_analysis_data[graphlet_class]["original-median"][0],
                 label="original",
                 color="tab:orange",
             )
-            ax.set_title(graphlet_class_to_name(graphlet_class))
-            ax.legend()
-            ax.set_xlabel(metric_name)
+            axis.set_title(graphlet_class_to_name(graphlet_class))
+            axis.legend()
+            axis.set_xlabel(metric_name)
         fig.suptitle("sample-median")
 
         return fig

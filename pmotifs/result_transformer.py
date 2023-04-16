@@ -1,23 +1,25 @@
+"""Utility to load results of previous (p)motif-detections from disk and transform the positional
+metrics with consolidation methods into evaluation metrics."""
 from __future__ import annotations
-
 import os
 from multiprocessing import Pool
 from pathlib import Path
 from typing import List, Callable
-
 import pandas as pd
 from tqdm import tqdm
 
-from pmotifs.PMotifGraph import PMotifGraph, PMotifGraphWithRandomization
+from pmotifs.p_motif_graph import PMotifGraph, PMotifGraphWithRandomization
 from pmotifs.config import WORKERS
-from pmotifs.pMetrics.PMetric import RawMetric, PreComputation
-from pmotifs.pMetrics.PMetricResult import PMetricResult
+from pmotifs.p_metric.p_metric import RawMetric, PreComputation
+from pmotifs.p_metric.p_metric_result import PMetricResult
 
 
 ConsolidationMethod = Callable[[RawMetric, PreComputation], float]
 
 
-class Result:
+class ResultTransformer:
+    """Load raw graphlets and their positional metrics from disk and offers an interface to
+    consolidate the positional metrics into new evaluation metrics."""
     def __init__(
         self,
         pmotif_graph: PMotifGraph,
@@ -36,9 +38,12 @@ class Result:
 
     @property
     def consolidated_metrics(self) -> List[str]:
+        """Return all consolidated metrics which were applied through `consolidate_metric`."""
         return self._consolidated_metrics
 
     def get_p_metric_result(self, name: str) -> PMetricResult:
+        """Return the result stored under the metric name `name`.
+        Raises a KeyError if no such metric was found on disk."""
         return self._p_metric_result_lookup[name]
 
     def consolidate_metric(
@@ -47,7 +52,8 @@ class Result:
         consolidate_name: str,
         consolidate_method: ConsolidationMethod,
     ):
-        """Applied `consolidate_method` on the `metric_name` column, creating a new `consolidate_name` column.
+        """Apply `consolidate_method` on the `metric_name` column,
+        creating a new `consolidate_name` column.
         Feeds the pre-computation result and the raw metric into the `consolidate_method`.
 
         Expects `metric_name` to be a name of a metric in `self.p_metric_results`.
@@ -61,20 +67,20 @@ class Result:
 
     @staticmethod
     def load_result(
-        GRAPH_EDGELIST: Path,
-        OUT: Path,
-        GRAPHLET_SIZE: int,
+        edgelist: Path,
+        out: Path,
+        graphlet_size: int,
         supress_tqdm: bool = False,
-    ) -> Result:
-        """Loads results by building a pgraph from input args"""
-        pgraph = PMotifGraph(GRAPH_EDGELIST, OUT)
-        return Result._load_result(pgraph, GRAPHLET_SIZE, supress_tqdm)
+    ) -> ResultTransformer:
+        """Load results by building a pgraph from input args."""
+        pgraph = PMotifGraph(edgelist, out)
+        return ResultTransformer._load_result(pgraph, graphlet_size, supress_tqdm)
 
     @staticmethod
     def _load_result(
         pgraph: PMotifGraph, graphlet_size: int, supress_tqdm: bool
-    ) -> Result:
-        """Loads results for a given pgraph"""
+    ) -> ResultTransformer:
+        """Load results for a given pgraph from disk."""
         g_p = pgraph.load_graphlet_pos_zip(graphlet_size, supress_tqdm)
 
         pmetric_output_directory = pgraph.get_pmetric_directory(graphlet_size)
@@ -96,7 +102,7 @@ class Result:
 
         positional_metric_df = pd.DataFrame(graphlet_data)
 
-        return Result(
+        return ResultTransformer(
             pmotif_graph=pgraph,
             positional_metric_df=positional_metric_df,
             p_metric_results=p_metric_results,
@@ -108,7 +114,8 @@ class Result:
         pmotif_graph: PMotifGraph,
         graphlet_size: int,
         supress_tqdm: bool = False,
-    ) -> List[Result]:
+    ) -> List[ResultTransformer]:
+        """Loads `graphlet_size`-graphlets and computed metrics which are present on disk."""
         pmotif_with_rand = PMotifGraphWithRandomization(
             pmotif_graph.edgelist_path, pmotif_graph.output_directory
         )
@@ -118,14 +125,14 @@ class Result:
             for swapped_graph in pmotif_with_rand.swapped_graphs
         ]
 
-        with Pool(processes=WORKERS) as p:
+        with Pool(processes=WORKERS) as pool:
             pbar = tqdm(
                 input_args,
                 total=len(pmotif_with_rand.swapped_graphs),
                 desc="Loading Randomized Results",
             )
-            return p.starmap(
-                Result._load_result,
+            return pool.starmap(
+                ResultTransformer._load_result,
                 pbar,
                 chunksize=1,
             )

@@ -1,3 +1,4 @@
+"""Script to run a p-graphlet or p-motif detection from command line."""
 import argparse
 from os import makedirs
 from pathlib import Path
@@ -6,18 +7,18 @@ from typing import List
 import networkx as nx
 from tqdm import tqdm
 
-import pmotifs.pMetrics.PMetric as PMetric
-from pmotifs.PMotifGraph import PMotifGraph, PMotifGraphWithRandomization
+import pmotifs.p_metric.p_metric as PMetric
+from pmotifs.p_motif_graph import PMotifGraph, PMotifGraphWithRandomization
 from pmotifs.config import (
     GTRIESCANNER_EXECUTABLE,
     EXPERIMENT_OUT,
     DATASET_DIRECTORY,
 )
 from pmotifs.gtrieScanner.wrapper import run_gtrieScanner
-from pmotifs.pMetrics.PAnchorNodeDistance import PAnchorNodeDistance
-from pmotifs.pMetrics.PDegree import PDegree
-from pmotifs.pMetrics.PGraphModuleParticipation import PGraphModuleParticipation
-from pmotifs.positional_metrics import calculate_metrics
+from pmotifs.p_metric.p_anchor_node_distance import PAnchorNodeDistance
+from pmotifs.p_metric.p_degree import PDegree
+from pmotifs.p_metric.p_graph_module_participation import PGraphModuleParticipation
+from pmotifs.p_metric.metric_processing import calculate_metrics
 
 
 def assert_validity(pmotif_graph: PMotifGraph):
@@ -39,6 +40,7 @@ def process_graph(
     metrics: List[PMetric.PMetric],
     check_validity: bool = True,
 ):
+    """Run a graphlet detection and metric calculation (if any) on the given graph."""
     if check_validity:
         assert_validity(pmotif_graph)
 
@@ -57,6 +59,8 @@ def process_graph(
 
 
 def main(edgelist: Path, out: Path, graphlet_size: int, random_graphs: int = 0):
+    """Create three p-Metrics, generate random graphs from the original graph, and
+    run a p-motif detection on the graphs (or a graphlet-detection if random_graphs=0)."""
     degree = PDegree()
     anchor_node = PAnchorNodeDistance()
     graph_module_participation = PGraphModuleParticipation()

@@ -1,18 +1,20 @@
+"""Utility to read gtrieScanner output."""
 from pathlib import Path
 from typing import Dict
 
 
 def parse_graphlet_detection_results_table(
-    frequency_file: Path, k: int
+    frequency_filepath: Path, k: int
 ) -> Dict[str, int]:
     """Load a graphlet frequency file created by gtrieScanner
     Return a lookup from graphlet-class (adj-matrix) to the number of graphlet-occurrences
     """
-    with open(frequency_file, "r") as f:
-        lines = f.readlines()
+    with open(frequency_filepath, "r", encoding="utf-8") as frequency_file:
+        lines = frequency_file.readlines()
     table_lines = lines[lines.index("Motif Analysis Results\n") + 2 :]
 
     header = table_lines.pop(0)
+    del header
 
     # remove trailing newlines
     while table_lines[-1] == "\n":

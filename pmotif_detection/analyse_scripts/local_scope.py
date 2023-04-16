@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from statistics import quantiles
 
-from pmotifs.analysis_utilities.Result import Result
+from pmotifs.result_transformer import ResultTransformer
 from pmotifs.graphlet_representation import graphlet_class_to_name
 
 from pmotif_detection.analyse_scripts.util import get_graphlet_classes
@@ -13,7 +13,7 @@ class LocalScope:
     """Creates an analysis utility object focussed on comparisons within,
     handling data loading, refining, and exposes special analysis methods"""
 
-    def __init__(self, result: Result):
+    def __init__(self, result: ResultTransformer):
         self.result = result
 
     @property

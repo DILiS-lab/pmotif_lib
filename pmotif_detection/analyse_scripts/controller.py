@@ -1,38 +1,41 @@
+"""Script to consolidate metrics of a p-motif detection output and place themn in an
+html report."""
 import argparse
 from os import makedirs
 from pathlib import Path
 from typing import List
 import matplotlib.pyplot as plt
-
 from tqdm import tqdm
 
-from pmotif_detection.analyse_scripts.report_generator import create
-from pmotif_detection.analyse_scripts.util import add_consolidated_metrics
-from pmotifs.analysis_utilities.Result import Result
-from pmotifs.config import config
+from pmotifs import config
+from pmotifs.result_transformer import ResultTransformer
 
+from pmotif_detection.analyse_scripts.util import add_consolidated_metrics
 from pmotif_detection.analyse_scripts.local_scope import LocalScope
 from pmotif_detection.analyse_scripts.global_scope import GlobalScope
+from pmotif_detection.analyse_scripts.report_generator import create
 
 OUTPUT_PATH = "out"
 
 
-def execute(output_path: Path, graphlet_size: int, dataset: str, experiment_out: str):
+def create_analytics(output_path: Path, graphlet_size: int, dataset: str, experiment_out: str):
+    """Loads result from disk and creates analytical results on a local (non-randomized) and
+    global (randomized) level. Produces csv's and images."""
     makedirs(output_path / "local", exist_ok=True)
     makedirs(output_path / "global", exist_ok=True)
 
     print("Loading result")
-    r = Result.load_result(
+    result = ResultTransformer.load_result(
         config.DATASET_DIRECTORY / dataset,
         config.EXPERIMENT_OUT / experiment_out,
         graphlet_size,
     )
     print("Consolidating metrics")
-    add_consolidated_metrics(r)
+    add_consolidated_metrics(result)
 
     print("Processing Local Analysis")
-    local_scope = LocalScope(r)
-    for metric_name in tqdm(r.consolidated_metrics, desc="Metric"):
+    local_scope = LocalScope(result)
+    for metric_name in tqdm(result.consolidated_metrics, desc="Metric"):
         makedirs(output_path / "local" / metric_name, exist_ok=True)
         # Repeats the occurrence percentiles plot without percentile highlights
         # fig = local_scope.plot_metric_distribution(metric_name)
@@ -50,7 +53,7 @@ def execute(output_path: Path, graphlet_size: int, dataset: str, experiment_out:
         )
 
     print("Processing Global Analysis")
-    global_scope = GlobalScope(r)
+    global_scope = GlobalScope(result)
     motif_fig = global_scope.plot_graphlet_frequency()
     save_and_close_fig(
         motif_fig,
@@ -58,7 +61,7 @@ def execute(output_path: Path, graphlet_size: int, dataset: str, experiment_out:
         "motifs",
     )
 
-    for metric_name in tqdm(r.consolidated_metrics, desc="Metric"):
+    for metric_name in tqdm(result.consolidated_metrics, desc="Metric"):
         makedirs(output_path / "global" / metric_name, exist_ok=True)
         significance = global_scope.pmotif_analysis_result(metric_name)
         significance.to_csv(output_path / "global" / metric_name / "significance.csv")
@@ -78,11 +81,12 @@ def execute(output_path: Path, graphlet_size: int, dataset: str, experiment_out:
 
 
 def save_and_close_fig(fig, outpath: Path, name: str, file_types: List[str] = None):
+    """Save a given figure as image with different filetypes. Closes the figure."""
     if file_types is None:
         file_types = ["png", "pdf"]
 
-    for ft in file_types:
-        fig.savefig(outpath / f"{name}.{ft}")
+    for file_type in file_types:
+        fig.savefig(outpath / f"{name}.{file_type}")
 
     plt.close(fig)
 
@@ -96,12 +100,12 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    outpath = config.ANALYSIS_OUT / args.edgelist_name / str(args.graphlet_size)
-    execute(
-        outpath,
+    output = config.ANALYSIS_OUT / args.edgelist_name / str(args.graphlet_size)
+    create_analytics(
+        output,
         args.graphlet_size,
         args.edgelist_name,
         ".".join(args.edgelist_name.split(".")[:-1]),
     )
 
-    create(outpath)
+    create(output)

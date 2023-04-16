@@ -1,46 +1,53 @@
-# Reimplementation of the edgeswapping algo employed by gtrieScanner
-# The networkx `connected_double_edge_swap` is also an option, but does not enable directed edges
-# Or tries per edge
-import networkx as nx
+"""Null models to randomize input graph."""
 import random
+import networkx as nx
 
 
-def swap_edges_markov_chain(g: nx.Graph, num: int, tries: int):
-    node_ids = list(g.nodes)
+def swap_edges_markov_chain(graph: nx.Graph, num: int, tries: int):
+    """Classic markov style edge swapping algorithm.
+    Reimplementation of the edgeswapping algo employed by gtrieScanner."""
+    node_ids = list(graph.nodes)
 
     for _ in range(num):
-        for src in g.nodes:
-            src_neighbors = list(g.neighbors(src))
+        for src in graph.nodes:
+            src_neighbors = list(graph.neighbors(src))
             for dst in src_neighbors:
-                for k in range(tries):
+                for _ in range(tries):
                     new_src = random.choice(node_ids)
-                    new_src_neighbors = list(g.neighbors(new_src))
+                    new_src_neighbors = list(graph.neighbors(new_src))
 
                     if len(new_src_neighbors) == 0:
                         continue
-                    if not _is_valid_new_src(dst, g, new_src, src):
+                    if not _is_valid_new_src(dst, graph, new_src, src):
                         continue
 
                     new_dst = random.choice(new_src_neighbors)
-                    if not _is_valid_new_dst(dst, g, new_dst, src):
+                    if not _is_valid_new_dst(dst, graph, new_dst, src):
                         continue
 
-                    _swap_edges(g, src, dst, new_src, new_dst)
+                    _swap_edges(graph, src, dst, new_src, new_dst)
                     # Stop trying
                     break
-    return g
+    return graph
 
 
-def _swap_edges(g, src, dst, new_src, new_dst):
-    g.remove_edge(src, dst)
-    g.remove_edge(new_src, new_dst)
-    g.add_edge(src, new_dst)
-    g.add_edge(new_src, dst)
+def _swap_edges(graph, src, dst, new_src, new_dst):
+    """Swaps the edges between src-dst and new_src-new_dst in graph."""
+    graph.remove_edge(src, dst)
+    graph.remove_edge(new_src, new_dst)
+    graph.add_edge(src, new_dst)
+    graph.add_edge(new_src, dst)
 
 
-def _is_valid_new_dst(dst, g, new_dst, src):
-    return src != new_dst and dst != new_dst and not g.has_edge(src, new_dst)
+def _is_valid_new_dst(dst, graph, new_dst, src):
+    """Checks whether a new destination for an edge is
+    not the same as the old source,
+    not the same as the old destination,
+    and whether src-new_dst is not already an edge in graph."""
+    return src != new_dst and dst != new_dst and not graph.has_edge(src, new_dst)
 
 
-def _is_valid_new_src(dst, g, new_src, src):
-    return src != new_src and dst != new_src and not g.has_edge(new_src, dst)
+def _is_valid_new_src(dst, graph, new_src, src):
+    """Checks whether a new source for an edge is not the same as the old source or old destination
+    and whether new_src-dst is not already an edge in graph."""
+    return src != new_src and dst != new_src and not graph.has_edge(new_src, dst)

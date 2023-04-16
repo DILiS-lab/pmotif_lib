@@ -5,18 +5,18 @@ from typing import (
     List,
     Dict,
 )
-from tqdm import tqdm
 from multiprocessing import Pool
+from tqdm import tqdm
 import networkx as nx
-from pmotifs.GraphletOccurence import GraphletOccurrence
-from pmotifs.PMotifGraph import PMotifGraph
+from pmotifs.graphlet_occurence import GraphletOccurrence
+from pmotifs.p_motif_graph import PMotifGraph
 from pmotifs.config import WORKERS
-from pmotifs.pMetrics.PMetric import PMetric
-from pmotifs.pMetrics.PMetricResult import PMetricResult
+from pmotifs.p_metric.p_metric import PMetric
+from pmotifs.p_metric.p_metric_result import PMetricResult
 
 
 def process_graphlet_occurrences(
-    g: nx.Graph, graphlet_occurrences: List[GraphletOccurrence], metrics: List[PMetric]
+    graph: nx.Graph, graphlet_occurrences: List[GraphletOccurrence], metrics: List[PMetric]
 ) -> List[PMetricResult]:
     """Calculate motif positional metrics"""
 
@@ -25,14 +25,14 @@ def process_graphlet_occurrences(
     # Pre-Compute for metrics
     metric: PMetric
     for metric in tqdm(metrics, desc="Pre-computing metrics", leave=False):
-        result[metric.name]["pre_compute"] = metric.pre_computation(g)
+        result[metric.name]["pre_compute"] = metric.pre_computation(graph)
 
     # Calculate metrics
-    with Pool(processes=WORKERS) as p:
+    with Pool(processes=WORKERS) as pool:
         for metric in tqdm(metrics, desc="Calculating metrics", leave=False):
             result[metric.name]["graphlet_metrics"] = []
             args = [
-                (g, g_oc.nodes, result[metric.name]["pre_compute"])
+                (graph, g_oc.nodes, result[metric.name]["pre_compute"])
                 for g_oc in graphlet_occurrences
             ]
 
@@ -41,7 +41,7 @@ def process_graphlet_occurrences(
                 desc="Graphlet Occurrence Progress",
                 leave=False,
             ) as pbar:
-                for g_oc_result in p.starmap(
+                for g_oc_result in pool.starmap(
                     metric.metric_calculation,
                     args,
                     chunksize=100,
@@ -65,11 +65,11 @@ def calculate_metrics(
     metrics: List[PMetric],
     save_to_disk: bool = True,
 ) -> List[PMetricResult]:
-    """When pointed to a graph and a motif file, unzips the motif file, reads the graphs and calculates various
-    positional metrics.
-    Returns two lookups: Metric Name to Pre-Computation results, and Metric Name to raw metrics.
-    raw metrics is in the same order as the graphlets."""
-    g = nx.readwrite.edgelist.read_edgelist(
+    """When pointed to a graph and a motif file, unzips the motif file, reads the graphs,
+     and calculates given positional metrics.
+     Can save results directly to disk.
+    Returns a list of the results as PMetricResult objects."""
+    graph = nx.readwrite.edgelist.read_edgelist(
         pmotif_graph.get_graph_path(), data=False, create_using=nx.Graph
     )
     graphlet_occurrences: List[GraphletOccurrence] = pmotif_graph.load_graphlet_pos_zip(
@@ -77,7 +77,7 @@ def calculate_metrics(
     )
 
     metric_result_lookup = process_graphlet_occurrences(
-        g, graphlet_occurrences, metrics
+        graph, graphlet_occurrences, metrics
     )
     if save_to_disk:
         metric_output = pmotif_graph.get_pmetric_directory(graphlet_size)
