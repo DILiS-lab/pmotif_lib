@@ -115,7 +115,7 @@ if __name__ == "__main__":
     GRAPH_EDGELIST = DATASET_DIRECTORY / args.edgelist_name
     OUT = EXPERIMENT_OUT / "benchmarking" / GRAPH_EDGELIST.stem
     GRAPHLET_SIZE = args.graphlet_size
-    RANDOM_GRAPHS = 10
+    RANDOM_GRAPHS = 100
     BENCHMARKING_RUN = args.benchmarking_run
 
     makedirs(OUT, exist_ok=True)
