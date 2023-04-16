@@ -19,8 +19,8 @@ For ease of use you can add the `pmotifs` module to the `PYTHONPATH`. This can a
 
 ```bash
 # Append these line to `.venv/bin/activate`
-export PYTHONPATH="/the/path/to/motif_position_tooling_repo"
 export OLD_PYTHONPATH="$PYTHONPATH"
+export PYTHONPATH="/the/path/to/motif_position_tooling_repo"
 
 # Add this line to the beginning of the deactivate method in the same file
 export PYTHONPATH="$OLD_PYTHONPATH"
