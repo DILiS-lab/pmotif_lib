@@ -7,14 +7,14 @@ from pmotifs.pMetrics.PMetric import PMetric, PreComputation
 
 
 class PAnchorNodeDistance(PMetric):
-
     def __init__(self):
         super().__init__("pAnchorNodeDistance")
 
     @staticmethod
     def get_hubs(g: nx.Graph) -> List[str]:
         """Returns hubs of a networkx graph
-        Nodes with a degree higher than one standard deviations above the mean degree are considered hubs"""
+        Nodes with a degree higher than one standard deviations above the mean degree are considered hubs
+        """
         degrees = dict(g.degree)
 
         degree_mean = statistics.mean(degrees.values())
@@ -57,11 +57,15 @@ class PAnchorNodeDistance(PMetric):
 
         anchor_node: str
         shortest_path_lookup: Dict[str, int]
-        for anchor_node, shortest_path_lookup in pre_compute["nodes_shortest_path_lookup"].items():
+        for anchor_node, shortest_path_lookup in pre_compute[
+            "nodes_shortest_path_lookup"
+        ].items():
             if anchor_node in graphlet_nodes:
                 path_lengths.append(0)
                 continue
-            shortest_path = min([shortest_path_lookup.get(n, -1) for n in graphlet_nodes])
+            shortest_path = min(
+                [shortest_path_lookup.get(n, -1) for n in graphlet_nodes]
+            )
 
             path_lengths.append(shortest_path)
         return path_lengths

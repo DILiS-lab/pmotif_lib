@@ -28,10 +28,17 @@ def assert_validity(pmotif_graph: PMotifGraph):
         raise ValueError("Graph contains Self-Loops!")  # Asserts simple graph
 
     if min(map(int, nx_graph.nodes)) < 1:
-        raise ValueError("Graph contains node ids below '1'!")  # Assert the lowest node index is >= 1
+        raise ValueError(
+            "Graph contains node ids below '1'!"
+        )  # Assert the lowest node index is >= 1
 
 
-def process_graph(pmotif_graph: PMotifGraph, graphlet_size: int, metrics: List[PMetric.PMetric], check_validity: bool = True):
+def process_graph(
+    pmotif_graph: PMotifGraph,
+    graphlet_size: int,
+    metrics: List[PMetric.PMetric],
+    check_validity: bool = True,
+):
     if check_validity:
         assert_validity(pmotif_graph)
 
@@ -62,7 +69,9 @@ def main(edgelist: Path, out: Path, graphlet_size: int, random_graphs: int = 0):
         [degree, anchor_node, graph_module_participation],
     )
 
-    randomized_pmotif_graph = PMotifGraphWithRandomization.create_from_pmotif_graph(pmotif_graph, random_graphs)
+    randomized_pmotif_graph = PMotifGraphWithRandomization.create_from_pmotif_graph(
+        pmotif_graph, random_graphs
+    )
     del pmotif_graph
 
     pbar_swapped_graphs = tqdm(
@@ -83,7 +92,9 @@ def main(edgelist: Path, out: Path, graphlet_size: int, random_graphs: int = 0):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--edgelist_name", required=True, type=str)
-    parser.add_argument("--graphlet_size", required=True, type=int, default=3, choices=[3, 4])
+    parser.add_argument(
+        "--graphlet_size", required=True, type=int, default=3, choices=[3, 4]
+    )
     parser.add_argument("--random_graphs", required=False, type=int, default=0)
 
     args = parser.parse_args()

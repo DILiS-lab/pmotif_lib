@@ -7,7 +7,6 @@ from pmotifs.pMetrics.PMetric import PMetric, PreComputation
 
 
 class PGraphModuleParticipation(PMetric):
-
     def __init__(self):
         super().__init__("pGraphModuleParticipation")
 

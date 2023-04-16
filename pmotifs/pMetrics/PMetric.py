@@ -45,4 +45,3 @@ class PMetric(ABC):
         Can return any type, but has to be json serializable
         """
         pass
-

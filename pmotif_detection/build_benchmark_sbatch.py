@@ -43,6 +43,5 @@ with open(f"slurm_benchmark.batch", "w") as f:
     for graphlet_size in graphlet_sizes:
         for d in datasets:
             for benchmarking_run in benchmarking_runs:
-
                 f.write(generate_line(Path(d), graphlet_size, benchmarking_run))
                 f.write("\n")

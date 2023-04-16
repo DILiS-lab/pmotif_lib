@@ -6,7 +6,6 @@ from pmotifs.pMetrics.PMetric import PMetric, PreComputation
 
 
 class PDegree(PMetric):
-
     def __init__(self):
         super().__init__("pDegree")
 
@@ -20,7 +19,7 @@ class PDegree(PMetric):
         nodes = set(graphlet_nodes)
         all_edges = g.edges(graphlet_nodes)
         external_degree = 0
-        for (u, v) in all_edges:
+        for u, v in all_edges:
             if u in nodes and v in nodes:
                 # Edge within motif
                 continue

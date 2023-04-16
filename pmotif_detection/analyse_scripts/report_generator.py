@@ -16,7 +16,9 @@ def create_global_scope(basepath, metric):
     significance = pd.read_csv(f"{basepath}/global/{metric}/significance.csv")
     significance_html = "Relevance of motifs:<br>"
     for _, (_, graphlet_class, relevant, total) in significance.iterrows():
-        significance_html += f"<p>{graphlet_class_to_name(graphlet_class)}: {relevant} / {total}</p>\n"
+        significance_html += (
+            f"<p>{graphlet_class_to_name(graphlet_class)}: {relevant} / {total}</p>\n"
+        )
 
     return f"""
 <div class="metric {metric.replace(' ', '_')}" style="display: none">
@@ -32,7 +34,6 @@ def create_global_scope(basepath, metric):
 def create_local_scope(basepath, metric):
     mann_u = pd.read_csv(f"{basepath}/local/{metric}/mann_whitneyu.csv")
     mann_u_html = mann_u.to_html()
-
 
     return f"""
 <div class="metric {metric.replace(' ', '_')}" style="display: none">

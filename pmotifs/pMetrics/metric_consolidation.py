@@ -14,19 +14,27 @@ def degree_consolidation(raw_metric: RawMetric, pre_compute: PreComputation) -> 
     return raw_metric
 
 
-def max_normalized_anchor_hop_distances(raw_metric: RawMetric, pre_compute: PreComputation) -> float:
+def max_normalized_anchor_hop_distances(
+    raw_metric: RawMetric, pre_compute: PreComputation
+) -> float:
     return max(_get_normalized_anchor_hop_distances(raw_metric, pre_compute))
 
 
-def min_normalized_anchor_hop_distances(raw_metric: RawMetric, pre_compute: PreComputation) -> float:
+def min_normalized_anchor_hop_distances(
+    raw_metric: RawMetric, pre_compute: PreComputation
+) -> float:
     return min(_get_normalized_anchor_hop_distances(raw_metric, pre_compute))
 
 
-def mean_normalized_anchor_hop_distances(raw_metric: RawMetric, pre_compute: PreComputation) -> float:
+def mean_normalized_anchor_hop_distances(
+    raw_metric: RawMetric, pre_compute: PreComputation
+) -> float:
     return mean(_get_normalized_anchor_hop_distances(raw_metric, pre_compute))
 
 
-def _get_normalized_anchor_hop_distances(raw_metric: RawMetric, pre_compute: PreComputation) -> List[float]:
+def _get_normalized_anchor_hop_distances(
+    raw_metric: RawMetric, pre_compute: PreComputation
+) -> List[float]:
     anchor_nodes = pre_compute["anchor_nodes"]
     closeness_centrality = pre_compute["closeness_centrality"]
 
@@ -36,7 +44,9 @@ def _get_normalized_anchor_hop_distances(raw_metric: RawMetric, pre_compute: Pre
     ]
 
 
-def graph_module_participation_ratio(raw_metric: RawMetric, pre_compute: PreComputation) -> float:
+def graph_module_participation_ratio(
+    raw_metric: RawMetric, pre_compute: PreComputation
+) -> float:
     total_module_count = len(pre_compute["graph_modules"])
     return len(raw_metric) / total_module_count
 
@@ -49,7 +59,9 @@ metrics: Dict[str, List[Tuple[str, ConsolidationMethod]]] = {
         ("mean normalized anchor hop distance", mean_normalized_anchor_hop_distances),
     ],
     # PGraphModuleParticipation evaluation metrics and their consolidation methods
-    PGraphModuleParticipation().name: [("graph module participation ratio", graph_module_participation_ratio)],
+    PGraphModuleParticipation().name: [
+        ("graph module participation ratio", graph_module_participation_ratio)
+    ],
     # PDegree evaluation metrics and their consolidation methods
     PDegree().name: [("degree", degree_consolidation)],
 }

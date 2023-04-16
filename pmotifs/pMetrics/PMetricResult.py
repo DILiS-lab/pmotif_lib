@@ -28,7 +28,9 @@ class PMetricResult:
 
         # Store graphlet_metrics
         with open(output / "graphlet_metrics", "w") as f:
-            f.write(f"{len(self.graphlet_metrics)}\n")  # Write len of file for progress bar total
+            f.write(
+                f"{len(self.graphlet_metrics)}\n"
+            )  # Write len of file for progress bar total
             for g_m in self.graphlet_metrics:
                 f.write(json.dumps(g_m))
                 f.write("\n")
@@ -39,7 +41,9 @@ class PMetricResult:
         return PMetricResult(
             metric_name=output.name,
             pre_compute=PMetricResult._load_pre_compute(output / "pre_compute"),
-            graphlet_metrics=PMetricResult._load_graphlet_metrics(output / "graphlet_metrics", supress_tqdm),
+            graphlet_metrics=PMetricResult._load_graphlet_metrics(
+                output / "graphlet_metrics", supress_tqdm
+            ),
         )
 
     @staticmethod
@@ -54,7 +58,9 @@ class PMetricResult:
         return pre_compute
 
     @staticmethod
-    def _load_graphlet_metrics(graphlet_metric_file: Path, supress_tqdm=False) -> List[RawMetric]:
+    def _load_graphlet_metrics(
+        graphlet_metric_file: Path, supress_tqdm=False
+    ) -> List[RawMetric]:
         """Loads the graphlet metrics found at graphlet_metric_file"""
         with open(graphlet_metric_file, "r") as f:
             total = int(f.readline().strip())

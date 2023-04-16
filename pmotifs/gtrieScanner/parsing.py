@@ -2,12 +2,15 @@ from pathlib import Path
 from typing import Dict
 
 
-def parse_graphlet_detection_results_table(frequency_file: Path, k: int) -> Dict[str, int]:
+def parse_graphlet_detection_results_table(
+    frequency_file: Path, k: int
+) -> Dict[str, int]:
     """Load a graphlet frequency file created by gtrieScanner
-    Return a lookup from graphlet-class (adj-matrix) to the number of graphlet-occurrences"""
+    Return a lookup from graphlet-class (adj-matrix) to the number of graphlet-occurrences
+    """
     with open(frequency_file, "r") as f:
         lines = f.readlines()
-    table_lines = lines[lines.index("Motif Analysis Results\n") + 2:]
+    table_lines = lines[lines.index("Motif Analysis Results\n") + 2 :]
 
     header = table_lines.pop(0)
 
@@ -22,7 +25,7 @@ def parse_graphlet_detection_results_table(frequency_file: Path, k: int) -> Dict
     # So we process k+1 lines batches, to process each row
     table_row_height = k + 1
     for i in range(0, len(table_lines), table_row_height):
-        _, *graphlet_class_parts = table_lines[i:i + table_row_height]
+        _, *graphlet_class_parts = table_lines[i : i + table_row_height]
 
         # Separate last part into graph part and metric part
         frequency = graphlet_class_parts[-1].split("|")[0].split(" ")[-2]

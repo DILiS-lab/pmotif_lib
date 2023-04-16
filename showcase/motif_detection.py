@@ -13,7 +13,9 @@ def main(edgelist: Path, output: Path, graphlet_size: int):
 
     original_frequency = graphlet_detection(pmotif_graph, graphlet_size)
 
-    randomized_pmotif_graph = PMotifGraphWithRandomization.create_from_pmotif_graph(pmotif_graph, 10)
+    randomized_pmotif_graph = PMotifGraphWithRandomization.create_from_pmotif_graph(
+        pmotif_graph, 10
+    )
 
     random_frequencies = []
     for random_graph in randomized_pmotif_graph.swapped_graphs:
@@ -22,9 +24,15 @@ def main(edgelist: Path, output: Path, graphlet_size: int):
 
     print({graphlet_class_to_name(k): v for k, v in original_frequency.items()})
     for graphlet_class, frequency in original_frequency.items():
-        all_random_frequencies = [r_f.get(graphlet_class, 0) for r_f in random_frequencies]
-        z_score = (frequency - mean(all_random_frequencies)) / stdev(all_random_frequencies)
-        print(f"z-Score for {graphlet_class_to_name(graphlet_class)}: {round(z_score, 2)}")
+        all_random_frequencies = [
+            r_f.get(graphlet_class, 0) for r_f in random_frequencies
+        ]
+        z_score = (frequency - mean(all_random_frequencies)) / stdev(
+            all_random_frequencies
+        )
+        print(
+            f"z-Score for {graphlet_class_to_name(graphlet_class)}: {round(z_score, 2)}"
+        )
 
 
 def graphlet_detection(pgraph: PMotifGraph, graphlet_size: int):

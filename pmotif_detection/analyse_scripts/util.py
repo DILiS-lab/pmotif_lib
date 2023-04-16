@@ -5,7 +5,7 @@ from typing import List, Set, Dict
 
 from pmotifs.graphlet_representation import (
     get_graphlet_size_from_class,
-    graphlet_classes_from_size
+    graphlet_classes_from_size,
 )
 from pmotifs.pMetrics.metric_consolidation import metrics
 from pmotifs.analysis_utilities.Result import Result
@@ -14,7 +14,9 @@ from pmotifs.analysis_utilities.Result import Result
 def add_consolidated_metrics(result: Result) -> Result:
     for metric_name, consolidation_metric_list in metrics.items():
         for consolidation_name, consolidation_method in consolidation_metric_list:
-            result.consolidate_metric(metric_name, consolidation_name, consolidation_method)
+            result.consolidate_metric(
+                metric_name, consolidation_name, consolidation_method
+            )
     return result
 
 
@@ -27,7 +29,10 @@ def to_graphlet_class_frequency(result_df: pd.DataFrame) -> Dict[str, int]:
     graphlet_size = get_graphlet_size_from_class(result_df["graphlet_class"][0])
     all_frequencies = dict.fromkeys(graphlet_classes_from_size(graphlet_size), 0)
 
-    return {**all_frequencies, **dict(result_df.groupby("graphlet_class").agg("count")["nodes"])}
+    return {
+        **all_frequencies,
+        **dict(result_df.groupby("graphlet_class").agg("count")["nodes"]),
+    }
 
 
 def get_zscore(point: float, values: List[float]) -> float:

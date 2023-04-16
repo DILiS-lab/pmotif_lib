@@ -6,6 +6,7 @@ from typing import List
 @dataclass
 class GraphletOccurrence:
     """Keeps track of a graphlet occurrence"""
+
     graphlet_class: str
     nodes: List[str]
 

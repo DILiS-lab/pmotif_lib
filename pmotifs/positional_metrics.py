@@ -16,9 +16,7 @@ from pmotifs.pMetrics.PMetricResult import PMetricResult
 
 
 def process_graphlet_occurrences(
-    g: nx.Graph,
-    graphlet_occurrences: List[GraphletOccurrence],
-    metrics: List[PMetric]
+    g: nx.Graph, graphlet_occurrences: List[GraphletOccurrence], metrics: List[PMetric]
 ) -> List[PMetricResult]:
     """Calculate motif positional metrics"""
 
@@ -33,7 +31,10 @@ def process_graphlet_occurrences(
     with Pool(processes=WORKERS) as p:
         for metric in tqdm(metrics, desc="Calculating metrics", leave=False):
             result[metric.name]["graphlet_metrics"] = []
-            args = [(g, g_oc.nodes, result[metric.name]["pre_compute"]) for g_oc in graphlet_occurrences]
+            args = [
+                (g, g_oc.nodes, result[metric.name]["pre_compute"])
+                for g_oc in graphlet_occurrences
+            ]
 
             with tqdm(
                 total=len(graphlet_occurrences),
@@ -68,10 +69,16 @@ def calculate_metrics(
     positional metrics.
     Returns two lookups: Metric Name to Pre-Computation results, and Metric Name to raw metrics.
     raw metrics is in the same order as the graphlets."""
-    g = nx.readwrite.edgelist.read_edgelist(pmotif_graph.get_graph_path(), data=False, create_using=nx.Graph)
-    graphlet_occurrences: List[GraphletOccurrence] = pmotif_graph.load_graphlet_pos_zip(graphlet_size)
+    g = nx.readwrite.edgelist.read_edgelist(
+        pmotif_graph.get_graph_path(), data=False, create_using=nx.Graph
+    )
+    graphlet_occurrences: List[GraphletOccurrence] = pmotif_graph.load_graphlet_pos_zip(
+        graphlet_size
+    )
 
-    metric_result_lookup = process_graphlet_occurrences(g, graphlet_occurrences, metrics)
+    metric_result_lookup = process_graphlet_occurrences(
+        g, graphlet_occurrences, metrics
+    )
     if save_to_disk:
         metric_output = pmotif_graph.get_pmetric_directory(graphlet_size)
         makedirs(metric_output)

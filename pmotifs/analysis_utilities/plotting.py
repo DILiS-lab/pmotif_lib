@@ -25,7 +25,7 @@ def _prepare_kamada_kawai_layout_with_multiple_components(nx_g):
     max_dist = -1
     for row, data in nx.shortest_path_length(nx_g):
         for col, dist in data.items():
-            pos_df.loc[row,col] = dist
+            pos_df.loc[row, col] = dist
             max_dist = max(max_dist, dist)
 
     pos_df = pos_df.fillna(max_dist / 2 + 2)
@@ -39,7 +39,7 @@ def highlight_motif(nx_g, motif, ax, pos):
     nx.draw_networkx_nodes(
         nx_g,
         nodelist=subgraph.nodes,
-        node_color='r',
+        node_color="r",
         pos=pos,
         ax=ax,
         node_size=20,
@@ -50,7 +50,7 @@ def highlight_motif(nx_g, motif, ax, pos):
         pos=pos,
         ax=ax,
         font_size=6,
-        font_color='b',
+        font_color="b",
     )
     nx.draw_networkx_edges(
         nx_g,

@@ -31,7 +31,9 @@ def assert_validity(pmotif_graph: PMotifGraph):
         raise ValueError("Graph contains Self-Loops!")  # Asserts simple graph
 
     if min(map(int, nx_graph.nodes)) < 1:
-        raise ValueError("Graph contains node ids below '1'!")  # Assert the lowest node index is >= 1
+        raise ValueError(
+            "Graph contains node ids below '1'!"
+        )  # Assert the lowest node index is >= 1
 
 
 def process_graph(
@@ -81,9 +83,13 @@ def main(edgelist: Path, out: Path, graphlet_size: int, random_graphs: int = 0):
         logger.info(f"{runtime_name}: {runtime}")
 
     start = time.time()
-    randomized_pmotif_graph = PMotifGraphWithRandomization.create_from_pmotif_graph(pmotif_graph, random_graphs)
+    randomized_pmotif_graph = PMotifGraphWithRandomization.create_from_pmotif_graph(
+        pmotif_graph, random_graphs
+    )
     random_creation_runtime = time.time() - start
-    logger.info(f"Random Creation Runtime: {random_creation_runtime} (created {random_graphs})")
+    logger.info(
+        f"Random Creation Runtime: {random_creation_runtime} (created {random_graphs})"
+    )
 
     del pmotif_graph
 
@@ -107,8 +113,12 @@ def main(edgelist: Path, out: Path, graphlet_size: int, random_graphs: int = 0):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--edgelist_name", required=True, type=str)
-    parser.add_argument("--graphlet_size", required=True, type=int, default=3, choices=[3, 4])
-    parser.add_argument("--benchmarking_run", required=True, type=int, choices=[1, 2, 3, 4, 5])
+    parser.add_argument(
+        "--graphlet_size", required=True, type=int, default=3, choices=[3, 4]
+    )
+    parser.add_argument(
+        "--benchmarking_run", required=True, type=int, choices=[1, 2, 3, 4, 5]
+    )
 
     args = parser.parse_args()
 
@@ -123,10 +133,10 @@ if __name__ == "__main__":
 
     logging.basicConfig(
         filename=f"benchmarking_logs/{BENCHMARKING_RUN}_{GRAPH_EDGELIST.stem}_{GRAPHLET_SIZE}_{RANDOM_GRAPHS}.benchmark",
-        filemode='a',
-        format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
-        datefmt='%H:%M:%S',
-        level=logging.DEBUG
+        filemode="a",
+        format="%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s",
+        datefmt="%H:%M:%S",
+        level=logging.DEBUG,
     )
 
     logger = logging.getLogger("benchmark")

@@ -8,12 +8,12 @@ from pmotifs.config import GTRIESCANNER_EXECUTABLE
 
 
 def run_gtrieScanner(
-        graph_edgelist: Path,
-        graphlet_size: int,
-        output_directory: Path,
-        gtrieScanner_executable: Path = GTRIESCANNER_EXECUTABLE,
-        directed: bool = False,
-        with_weights: bool = True,
+    graph_edgelist: Path,
+    graphlet_size: int,
+    output_directory: Path,
+    gtrieScanner_executable: Path = GTRIESCANNER_EXECUTABLE,
+    directed: bool = False,
+    with_weights: bool = True,
 ):
     """
     Detects motifs for the given edge list and compresses the result
@@ -31,7 +31,8 @@ def run_gtrieScanner(
 
     if "0" in g.nodes:
         raise IndexError(
-            "Network contains a node with index 0! gtrieScanner only accepts node indices starting from 1!")
+            "Network contains a node with index 0! gtrieScanner only accepts node indices starting from 1!"
+        )
 
     # Build GTrieScanner command
     directed_arg = "-d" if directed else "-u"
@@ -40,12 +41,17 @@ def run_gtrieScanner(
 
     command_parts = [
         f"{prefix}{gtrieScanner_executable}",
-        "-s", graphlet_size,
-        "-f", format_arg,
-        "-g", graph_edgelist,
+        "-s",
+        graphlet_size,
+        "-f",
+        format_arg,
+        "-g",
+        graph_edgelist,
         directed_arg,
-        "-oc", out_dir / "motif_pos",
-        "-o", out_dir / "motif_freq",
+        "-oc",
+        out_dir / "motif_pos",
+        "-o",
+        out_dir / "motif_freq",
     ]
     command_parts = [str(p) for p in command_parts]
 
@@ -58,11 +64,13 @@ def run_gtrieScanner(
     p.wait()
 
     # Store motifs in max compressed zip for space efficiency
-    with zipfile.ZipFile(f"{output_directory / str(graphlet_size) / 'motif_pos.zip'}", "w") as zipf:
+    with zipfile.ZipFile(
+        f"{output_directory / str(graphlet_size) / 'motif_pos.zip'}", "w"
+    ) as zipf:
         zipf.write(
             f"{output_directory / str(graphlet_size) / 'motif_pos'}",
             compress_type=zipfile.ZIP_DEFLATED,
             compresslevel=9,
             arcname="motif_pos",
         )
-    os.remove(output_directory / str(graphlet_size) / 'motif_pos')
+    os.remove(output_directory / str(graphlet_size) / "motif_pos")

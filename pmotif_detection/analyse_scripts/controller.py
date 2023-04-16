@@ -22,7 +22,11 @@ def execute(output_path: Path, graphlet_size: int, dataset: str, experiment_out:
     makedirs(output_path / "global", exist_ok=True)
 
     print("Loading result")
-    r = Result.load_result(config.DATASET_DIRECTORY / dataset, config.EXPERIMENT_OUT / experiment_out, graphlet_size)
+    r = Result.load_result(
+        config.DATASET_DIRECTORY / dataset,
+        config.EXPERIMENT_OUT / experiment_out,
+        graphlet_size,
+    )
     print("Consolidating metrics")
     add_consolidated_metrics(r)
 
@@ -36,7 +40,9 @@ def execute(output_path: Path, graphlet_size: int, dataset: str, experiment_out:
         mann_whitneyu = local_scope.compute_mann_whitneyu(metric_name)
         mann_whitneyu.to_csv(output_path / "local" / metric_name / "mann_whitneyu.csv")
 
-        occurrence_percentiles_fig = local_scope.plot_occurrence_percentiles(metric_name)
+        occurrence_percentiles_fig = local_scope.plot_occurrence_percentiles(
+            metric_name
+        )
         save_and_close_fig(
             occurrence_percentiles_fig,
             output_path / "local" / metric_name,
@@ -84,7 +90,9 @@ def save_and_close_fig(fig, outpath: Path, name: str, file_types: List[str] = No
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--edgelist_name", required=True, type=str)
-    parser.add_argument("--graphlet_size", required=True, type=int, default=3, choices=[3, 4])
+    parser.add_argument(
+        "--graphlet_size", required=True, type=int, default=3, choices=[3, 4]
+    )
 
     args = parser.parse_args()
 

@@ -8,10 +8,7 @@ from typing import List, Callable
 import pandas as pd
 from tqdm import tqdm
 
-from pmotifs.PMotifGraph import (
-    PMotifGraph,
-    PMotifGraphWithRandomization
-)
+from pmotifs.PMotifGraph import PMotifGraph, PMotifGraphWithRandomization
 from pmotifs.config import WORKERS
 from pmotifs.pMetrics.PMetric import RawMetric, PreComputation
 from pmotifs.pMetrics.PMetricResult import PMetricResult
@@ -33,10 +30,7 @@ class Result:
         self.p_metric_results: List[PMetricResult] = p_metric_results
         self.graphlet_size: int = graphlet_size
 
-        self._p_metric_result_lookup = {
-            r.metric_name: r
-            for r in self.p_metric_results
-        }
+        self._p_metric_result_lookup = {r.metric_name: r for r in self.p_metric_results}
 
         self._consolidated_metrics: List[str] = []
 
@@ -60,9 +54,9 @@ class Result:
         """
         p_metric_result = self.get_p_metric_result(metric_name)
 
-        self.positional_metric_df[consolidate_name] = self.positional_metric_df[metric_name].apply(
-            lambda x: consolidate_method(x, p_metric_result.pre_compute)
-        )
+        self.positional_metric_df[consolidate_name] = self.positional_metric_df[
+            metric_name
+        ].apply(lambda x: consolidate_method(x, p_metric_result.pre_compute))
         self._consolidated_metrics.append(consolidate_name)
 
     @staticmethod
@@ -77,17 +71,18 @@ class Result:
         return Result._load_result(pgraph, GRAPHLET_SIZE, supress_tqdm)
 
     @staticmethod
-    def _load_result(pgraph: PMotifGraph, graphlet_size: int, supress_tqdm: bool) -> Result:
+    def _load_result(
+        pgraph: PMotifGraph, graphlet_size: int, supress_tqdm: bool
+    ) -> Result:
         """Loads results for a given pgraph"""
-        g_p = pgraph.load_graphlet_pos_zip(
-            graphlet_size,
-            supress_tqdm
-        )
+        g_p = pgraph.load_graphlet_pos_zip(graphlet_size, supress_tqdm)
 
         pmetric_output_directory = pgraph.get_pmetric_directory(graphlet_size)
 
         p_metric_results = [
-            PMetricResult.load_from_disk(pmetric_output_directory / content, supress_tqdm)
+            PMetricResult.load_from_disk(
+                pmetric_output_directory / content, supress_tqdm
+            )
             for content in os.listdir(str(pmetric_output_directory))
             if (pmetric_output_directory / content).is_dir()
         ]
@@ -115,20 +110,18 @@ class Result:
         supress_tqdm: bool = False,
     ) -> List[Result]:
         pmotif_with_rand = PMotifGraphWithRandomization(
-            pmotif_graph.edgelist_path,
-            pmotif_graph.output_directory
+            pmotif_graph.edgelist_path, pmotif_graph.output_directory
         )
 
-        input_args = [(swapped_graph, graphlet_size, supress_tqdm) for swapped_graph in pmotif_with_rand.swapped_graphs]
+        input_args = [
+            (swapped_graph, graphlet_size, supress_tqdm)
+            for swapped_graph in pmotif_with_rand.swapped_graphs
+        ]
 
-        with Pool(
-            processes=WORKERS
-        ) as p:
+        with Pool(processes=WORKERS) as p:
             pbar = tqdm(
                 input_args,
-                total=len(
-                    pmotif_with_rand.swapped_graphs
-                ),
+                total=len(pmotif_with_rand.swapped_graphs),
                 desc="Loading Randomized Results",
             )
             return p.starmap(

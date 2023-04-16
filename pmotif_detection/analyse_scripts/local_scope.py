@@ -12,6 +12,7 @@ from pmotif_detection.analyse_scripts.util import get_graphlet_classes
 class LocalScope:
     """Creates an analysis utility object focussed on comparisons within,
     handling data loading, refining, and exposes special analysis methods"""
+
     def __init__(self, result: Result):
         self.result = result
 
@@ -30,8 +31,11 @@ class LocalScope:
 
         for i, graphlet_class in enumerate(graphlet_classes):
             ax = axes[i]
-            self.result_df[self.graphlet_class_filter(graphlet_class)][metric_name].plot.hist(
-                ax=ax, label=metric_name,
+            self.result_df[self.graphlet_class_filter(graphlet_class)][
+                metric_name
+            ].plot.hist(
+                ax=ax,
+                label=metric_name,
             )
             ax.set_title(graphlet_class_to_name(graphlet_class))
             ax.legend()
@@ -46,9 +50,13 @@ class LocalScope:
         )
 
         for graphlet_class_x in graphlet_classes:
-            x = self.result_df[self.graphlet_class_filter(graphlet_class_x)][metric_name]
+            x = self.result_df[self.graphlet_class_filter(graphlet_class_x)][
+                metric_name
+            ]
             for graphlet_class_y in graphlet_classes:
-                y = self.result_df[self.graphlet_class_filter(graphlet_class_y)][metric_name]
+                y = self.result_df[self.graphlet_class_filter(graphlet_class_y)][
+                    metric_name
+                ]
                 stat = mannwhitneyu(x, y)
                 mannwhitneyu_results[graphlet_class_x][graphlet_class_y] = {
                     "statistic": stat.statistic,
@@ -72,14 +80,28 @@ class LocalScope:
 
         cuts = {}
         for graphlet_class in graphlet_classes:
-            metric = self.result_df[self.graphlet_class_filter(graphlet_class)][metric_name]
+            metric = self.result_df[self.graphlet_class_filter(graphlet_class)][
+                metric_name
+            ]
             percentile_cuts = quantiles(metric, n=100, method="inclusive")
 
             cuts[graphlet_class] = {
-                "<1%": {"cut_value": round(percentile_cuts[0], 2), "occurrence_count": 0},
-                "<5%": {"cut_value": round(percentile_cuts[4], 2), "occurrence_count": 0},
-                ">95%": {"cut_value": round(percentile_cuts[-1], 2), "occurrence_count": 0},
-                ">99%": {"cut_value": round(percentile_cuts[-5], 2), "occurrence_count": 0},
+                "<1%": {
+                    "cut_value": round(percentile_cuts[0], 2),
+                    "occurrence_count": 0,
+                },
+                "<5%": {
+                    "cut_value": round(percentile_cuts[4], 2),
+                    "occurrence_count": 0,
+                },
+                ">95%": {
+                    "cut_value": round(percentile_cuts[-1], 2),
+                    "occurrence_count": 0,
+                },
+                ">99%": {
+                    "cut_value": round(percentile_cuts[-5], 2),
+                    "occurrence_count": 0,
+                },
             }
 
             for v in metric:
@@ -95,7 +117,9 @@ class LocalScope:
 
     def plot_occurrence_percentiles(self, metric_name: str):
         graphlet_classes = get_graphlet_classes(self.result_df)
-        fig, axes = plt.subplots(1, len(graphlet_classes), figsize=(len(graphlet_classes) * 5, 5))
+        fig, axes = plt.subplots(
+            1, len(graphlet_classes), figsize=(len(graphlet_classes) * 5, 5)
+        )
         if len(graphlet_classes) == 1:
             axes = [axes]
 
@@ -103,14 +127,16 @@ class LocalScope:
 
         for i, graphlet_class in enumerate(graphlet_classes):
             ax = axes[i]
-            metric = self.result_df[self.graphlet_class_filter(graphlet_class)][metric_name]
+            metric = self.result_df[self.graphlet_class_filter(graphlet_class)][
+                metric_name
+            ]
 
             ax.hist(metric, label=graphlet_class_to_name(graphlet_class))
             for percentile, data in cuts[graphlet_class].items():
                 color = "orange" if "<" in percentile else "green"
 
                 ax.axvline(
-                    data['cut_value'],
+                    data["cut_value"],
                     label=f"{percentile} (cut={data['cut_value']}, total={data['occurrence_count']})",
                     color=color,
                     alpha=0.5,
