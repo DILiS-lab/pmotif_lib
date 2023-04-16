@@ -26,12 +26,12 @@ def process_graphlet_occurrences(
 
     # Pre-Compute for metrics
     metric: PMetric
-    for metric in tqdm(metrics, desc="Pre-computing metrics"):
+    for metric in tqdm(metrics, desc="Pre-computing metrics", leave=False):
         result[metric.name]["pre_compute"] = metric.pre_computation(g)
 
     # Calculate metrics
     with Pool(processes=WORKERS) as p:
-        for metric in tqdm(metrics, desc="Calculating metrics"):
+        for metric in tqdm(metrics, desc="Calculating metrics", leave=False):
             result[metric.name]["graphlet_metrics"] = []
             args = [(g, g_oc.nodes, result[metric.name]["pre_compute"]) for g_oc in graphlet_occurrences]
 
