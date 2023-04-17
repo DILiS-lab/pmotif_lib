@@ -9,14 +9,14 @@ from scipy.stats import mannwhitneyu
 import matplotlib.pyplot as plt
 import pandas as pd
 
-from pmotifs.result_transformer import ResultTransformer
-from pmotifs.config import WORKERS
-from pmotifs.graphlet_representation import (
+from pmotif_lib.result_transformer import ResultTransformer
+from pmotif_lib.config import WORKERS
+from pmotif_lib.graphlet_representation import (
     graphlet_class_to_name,
     graphlet_classes_from_size,
 )
-from pmotifs.p_motif_graph import PMotifGraph
-from pmotifs.graphlet_representation import GRAPHLET_CLASS_NAME_LOOKUP
+from pmotif_lib.p_motif_graph import PMotifGraph
+from pmotif_lib.graphlet_representation import GRAPHLET_CLASS_NAME_LOOKUP
 
 from pmotif_detection.analyse_scripts.util import (
     to_graphlet_class_frequency,

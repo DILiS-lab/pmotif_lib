@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from pmotifs.graphlet_representation import graphlet_class_to_name
+from pmotif_lib.graphlet_representation import graphlet_class_to_name
 
 
 def create_global_scope_basic(basepath):

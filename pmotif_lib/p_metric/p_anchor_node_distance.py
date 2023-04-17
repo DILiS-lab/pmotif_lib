@@ -4,7 +4,7 @@ from typing import List, Dict
 
 import networkx as nx
 
-from pmotifs.p_metric.p_metric import PMetric, PreComputation
+from pmotif_lib.p_metric.p_metric import PMetric, PreComputation
 
 
 class PAnchorNodeDistance(PMetric):

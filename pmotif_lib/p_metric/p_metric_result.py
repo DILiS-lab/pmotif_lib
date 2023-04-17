@@ -7,7 +7,7 @@ from typing import List
 
 from tqdm import tqdm
 
-from pmotifs.p_metric.p_metric import PreComputation, RawMetric
+from pmotif_lib.p_metric.p_metric import PreComputation, RawMetric
 
 
 @dataclass

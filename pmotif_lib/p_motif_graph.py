@@ -9,11 +9,11 @@ from typing import List, Dict
 import networkx as nx
 from tqdm import tqdm
 
-from pmotifs.gtrieScanner import graph_io
-from pmotifs.gtrieScanner import parsing
-from pmotifs.graphlet_occurence import GraphletOccurrence
+from pmotif_lib.gtrieScanner import graph_io
+from pmotif_lib.gtrieScanner import parsing
+from pmotif_lib.graphlet_occurence import GraphletOccurrence
 
-from pmotifs.randomization import swap_edges_markov_chain
+from pmotif_lib.randomization import swap_edges_markov_chain
 
 
 class PMotifGraph:

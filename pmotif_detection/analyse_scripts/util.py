@@ -3,12 +3,12 @@ from pandas import DataFrame
 from statistics import mean, stdev
 from typing import List, Set, Dict
 
-from pmotifs.graphlet_representation import (
+from pmotif_lib.graphlet_representation import (
     get_graphlet_size_from_class,
     graphlet_classes_from_size,
 )
-from pmotifs.p_metric.metric_consolidation import metrics
-from pmotifs.result_transformer import ResultTransformer
+from pmotif_lib.p_metric.metric_consolidation import metrics
+from pmotif_lib.result_transformer import ResultTransformer
 
 
 def add_consolidated_metrics(result: ResultTransformer) -> ResultTransformer:

@@ -9,18 +9,18 @@ import logging
 from tqdm import tqdm
 import networkx as nx
 
-from pmotifs.p_metric.p_metric import PMetric
-from pmotifs.p_motif_graph import PMotifGraph, PMotifGraphWithRandomization
-from pmotifs.config import (
+from pmotif_lib.p_metric.p_metric import PMetric
+from pmotif_lib.p_motif_graph import PMotifGraph, PMotifGraphWithRandomization
+from pmotif_lib.config import (
     GTRIESCANNER_EXECUTABLE,
     EXPERIMENT_OUT,
     DATASET_DIRECTORY,
 )
-from pmotifs.gtrieScanner.wrapper import run_gtrieScanner
-from pmotifs.p_metric.p_anchor_node_distance import PAnchorNodeDistance
-from pmotifs.p_metric.p_degree import PDegree
-from pmotifs.p_metric.p_graph_module_participation import PGraphModuleParticipation
-from pmotifs.p_metric.metric_processing import calculate_metrics
+from pmotif_lib.gtrieScanner.wrapper import run_gtrieScanner
+from pmotif_lib.p_metric.p_anchor_node_distance import PAnchorNodeDistance
+from pmotif_lib.p_metric.p_degree import PDegree
+from pmotif_lib.p_metric.p_graph_module_participation import PGraphModuleParticipation
+from pmotif_lib.p_metric.metric_processing import calculate_metrics
 
 
 def assert_validity(pmotif_graph: PMotifGraph):

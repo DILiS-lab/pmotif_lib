@@ -6,7 +6,7 @@ import networkx as nx
 import pandas as pd
 from matplotlib.axes import Axes
 
-from pmotifs.p_motif_graph import PMotifGraph
+from pmotif_lib.p_motif_graph import PMotifGraph
 
 
 def get_kamada_kawai_layout(pmotif_graph: PMotifGraph):

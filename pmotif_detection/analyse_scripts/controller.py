@@ -7,8 +7,8 @@ from typing import List
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 
-from pmotifs import config
-from pmotifs.result_transformer import ResultTransformer
+from pmotif_lib import config
+from pmotif_lib.result_transformer import ResultTransformer
 
 from pmotif_detection.analyse_scripts.util import add_consolidated_metrics
 from pmotif_detection.analyse_scripts.local_scope import LocalScope

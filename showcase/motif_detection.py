@@ -2,10 +2,10 @@
 from pathlib import Path
 from statistics import mean, stdev
 
-from pmotifs.p_motif_graph import PMotifGraph, PMotifGraphWithRandomization
-from pmotifs.config import DATASET_DIRECTORY
-from pmotifs.graphlet_representation import graphlet_class_to_name
-from pmotifs.gtrieScanner.wrapper import run_gtrieScanner
+from pmotif_lib.p_motif_graph import PMotifGraph, PMotifGraphWithRandomization
+from pmotif_lib.config import DATASET_DIRECTORY
+from pmotif_lib.graphlet_representation import graphlet_class_to_name
+from pmotif_lib.gtrieScanner.wrapper import run_gtrieScanner
 
 
 def main(edgelist: Path, output: Path, graphlet_size: int):

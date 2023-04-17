@@ -8,8 +8,8 @@ from pathlib import Path
 from subprocess import Popen, PIPE
 import zipfile
 
-from pmotifs.config import GTRIESCANNER_EXECUTABLE
-from pmotifs.gtrieScanner.graph_io import read_edgelist
+from pmotif_lib.config import GTRIESCANNER_EXECUTABLE
+from pmotif_lib.gtrieScanner.graph_io import read_edgelist
 
 
 def run_gtrieScanner(

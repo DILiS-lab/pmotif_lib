@@ -2,11 +2,11 @@
 from statistics import mean
 from typing import List, Dict, Tuple
 
-from pmotifs.result_transformer import ConsolidationMethod
-from pmotifs.p_metric.p_anchor_node_distance import PAnchorNodeDistance
-from pmotifs.p_metric.p_degree import PDegree
-from pmotifs.p_metric.p_graph_module_participation import PGraphModuleParticipation
-from pmotifs.p_metric.p_metric import RawMetric, PreComputation
+from pmotif_lib.result_transformer import ConsolidationMethod
+from pmotif_lib.p_metric.p_anchor_node_distance import PAnchorNodeDistance
+from pmotif_lib.p_metric.p_degree import PDegree
+from pmotif_lib.p_metric.p_graph_module_participation import PGraphModuleParticipation
+from pmotif_lib.p_metric.p_metric import RawMetric, PreComputation
 
 
 def degree_consolidation(raw_metric: RawMetric, pre_compute: PreComputation) -> float:

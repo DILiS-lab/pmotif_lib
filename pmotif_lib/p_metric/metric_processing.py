@@ -8,11 +8,11 @@ from typing import (
 from multiprocessing import Pool
 from tqdm import tqdm
 import networkx as nx
-from pmotifs.graphlet_occurence import GraphletOccurrence
-from pmotifs.p_motif_graph import PMotifGraph
-from pmotifs.config import WORKERS
-from pmotifs.p_metric.p_metric import PMetric
-from pmotifs.p_metric.p_metric_result import PMetricResult
+from pmotif_lib.graphlet_occurence import GraphletOccurrence
+from pmotif_lib.p_motif_graph import PMotifGraph
+from pmotif_lib.config import WORKERS
+from pmotif_lib.p_metric.p_metric import PMetric
+from pmotif_lib.p_metric.p_metric_result import PMetricResult
 
 
 def process_graphlet_occurrences(

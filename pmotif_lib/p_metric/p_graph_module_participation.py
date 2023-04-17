@@ -3,7 +3,7 @@ from typing import List
 import networkx as nx
 from networkx.algorithms.community import greedy_modularity_communities
 
-from pmotifs.p_metric.p_metric import PMetric, PreComputation
+from pmotif_lib.p_metric.p_metric import PMetric, PreComputation
 
 
 class PGraphModuleParticipation(PMetric):

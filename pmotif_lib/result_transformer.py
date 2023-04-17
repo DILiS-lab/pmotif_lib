@@ -8,10 +8,10 @@ from typing import List, Callable
 import pandas as pd
 from tqdm import tqdm
 
-from pmotifs.p_motif_graph import PMotifGraph, PMotifGraphWithRandomization
-from pmotifs.config import WORKERS
-from pmotifs.p_metric.p_metric import RawMetric, PreComputation
-from pmotifs.p_metric.p_metric_result import PMetricResult
+from pmotif_lib.p_motif_graph import PMotifGraph, PMotifGraphWithRandomization
+from pmotif_lib.config import WORKERS
+from pmotif_lib.p_metric.p_metric import RawMetric, PreComputation
+from pmotif_lib.p_metric.p_metric_result import PMetricResult
 
 
 ConsolidationMethod = Callable[[RawMetric, PreComputation], float]
