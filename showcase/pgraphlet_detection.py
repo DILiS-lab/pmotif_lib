@@ -1,5 +1,6 @@
 """Performs a `graphlet_size` graphlet detection and
 calculates each metric in `metrics` for each graphlet occurrence."""
+import shutil
 from pathlib import Path
 
 from pmotif_lib.p_motif_graph import PMotifGraph
@@ -7,6 +8,10 @@ from pmotif_lib.config import DATASET_DIRECTORY
 from pmotif_lib.gtrieScanner.wrapper import run_gtrieScanner
 from pmotif_lib.p_metric.p_degree import PDegree
 from pmotif_lib.p_metric.metric_processing import calculate_metrics
+
+DATASET = DATASET_DIRECTORY / "kaggle_star_wars.edgelist"
+GRAPHLET_SIZE = 3
+OUTPUT = Path("./showcase_output")
 
 
 def main(edgelist: Path, output: Path, graphlet_size: int):
@@ -29,4 +34,6 @@ def main(edgelist: Path, output: Path, graphlet_size: int):
 
 
 if __name__ == "__main__":
-    main(DATASET_DIRECTORY / "kaggle_star_wars.edgelist", Path("./showcase_output"), 3)
+    if OUTPUT.is_dir():
+        shutil.rmtree(OUTPUT)
+    main(DATASET, OUTPUT, GRAPHLET_SIZE)

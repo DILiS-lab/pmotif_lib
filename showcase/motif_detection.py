@@ -1,4 +1,5 @@
 """Perform a graphlet detection on the original and on generated random graphs"""
+import shutil
 from pathlib import Path
 from statistics import mean, stdev
 
@@ -8,13 +9,19 @@ from pmotif_lib.graphlet_representation import graphlet_class_to_name
 from pmotif_lib.gtrieScanner.wrapper import run_gtrieScanner
 
 
-def main(edgelist: Path, output: Path, graphlet_size: int):
+DATASET = DATASET_DIRECTORY / "kaggle_star_wars.edgelist"
+GRAPHLET_SIZE = 3
+NUMBER_OF_RANDOM_GRAPHS = 10
+OUTPUT = Path("./showcase_output")
+
+
+def main(edgelist: Path, output: Path, graphlet_size: int, number_of_random_graphs: int):
     pmotif_graph = PMotifGraph(edgelist, output)
 
     original_frequency = graphlet_detection(pmotif_graph, graphlet_size)
 
     randomized_pmotif_graph = PMotifGraphWithRandomization.create_from_pmotif_graph(
-        pmotif_graph, 10
+        pmotif_graph, number_of_random_graphs
     )
 
     random_frequencies = []
@@ -56,4 +63,6 @@ def graphlet_occurrences_to_class_frequencies(graphlet_occurrences):
 
 
 if __name__ == "__main__":
-    main(DATASET_DIRECTORY / "kaggle_star_wars.edgelist", Path("./showcase_output"), 3)
+    if OUTPUT.is_dir():
+        shutil.rmtree(OUTPUT)
+    main(DATASET, OUTPUT, GRAPHLET_SIZE, NUMBER_OF_RANDOM_GRAPHS)

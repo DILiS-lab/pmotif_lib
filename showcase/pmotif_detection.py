@@ -1,5 +1,6 @@
 """Perform a graphlet detection on the original and on generated random graphs,
 calculates metrics on the resulting graphlets and compares them."""
+import shutil
 from pathlib import Path
 from typing import List
 
@@ -14,7 +15,13 @@ from pmotif_lib.p_metric.p_metric import PMetric
 from pmotif_lib.p_metric.metric_processing import calculate_metrics
 
 
-def main(edgelist: Path, output: Path, graphlet_size: int):
+DATASET = DATASET_DIRECTORY / "kaggle_star_wars.edgelist"
+GRAPHLET_SIZE = 3
+NUMBER_OF_RANDOM_GRAPHS = 10
+OUTPUT = Path("./showcase_output")
+
+
+def main(edgelist: Path, output: Path, graphlet_size: int, number_of_random_graphs: int):
     degree_metric = PDegree()
 
     pmotif_graph = PMotifGraph(edgelist, output)
@@ -23,7 +30,7 @@ def main(edgelist: Path, output: Path, graphlet_size: int):
     )
 
     randomized_pmotif_graph = PMotifGraphWithRandomization.create_from_pmotif_graph(
-        pmotif_graph, 10
+        pmotif_graph, number_of_random_graphs
     )
     del pmotif_graph
 
@@ -79,4 +86,6 @@ def get_metrics_by_graphlet_classes(
 
 
 if __name__ == "__main__":
-    main(DATASET_DIRECTORY / "kaggle_star_wars.edgelist", Path("./showcase_output"), 3)
+    if OUTPUT.is_dir():
+        shutil.rmtree(OUTPUT)
+    main(DATASET, OUTPUT, GRAPHLET_SIZE, NUMBER_OF_RANDOM_GRAPHS)

@@ -1,10 +1,16 @@
 """Calculates and returns all induced subgraphs of size `graphlet_size`,
 grouped by their isomorphic class (returns all graphlet occurrences)"""
+import shutil
 from pathlib import Path
 
 from pmotif_lib.p_motif_graph import PMotifGraph
 from pmotif_lib.config import DATASET_DIRECTORY
 from pmotif_lib.gtrieScanner.wrapper import run_gtrieScanner
+
+
+DATASET = DATASET_DIRECTORY / "kaggle_star_wars.edgelist"
+GRAPHLET_SIZE = 3
+OUTPUT = Path("./showcase_output")
 
 
 def main(edgelist: Path, output: Path, graphlet_size: int):
@@ -21,4 +27,6 @@ def main(edgelist: Path, output: Path, graphlet_size: int):
 
 
 if __name__ == "__main__":
-    main(DATASET_DIRECTORY / "kaggle_star_wars.edgelist", Path("./showcase_output/"), 3)
+    if OUTPUT.is_dir():
+        shutil.rmtree(OUTPUT)
+    main(DATASET, OUTPUT, GRAPHLET_SIZE)
