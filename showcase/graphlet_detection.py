@@ -1,5 +1,7 @@
 """Calculates and returns all induced subgraphs of size `graphlet_size`,
 grouped by their isomorphic class (returns all graphlet occurrences)"""
+# Code in showcase intentionally duplicated, so examples can stand alone
+# pylint: disable=duplicate-code
 import shutil
 from pathlib import Path
 
@@ -14,6 +16,7 @@ OUTPUT = Path("./showcase_output")
 
 
 def main(edgelist: Path, output: Path, graphlet_size: int):
+    """Run a graphlet detection."""
     pmotif_graph = PMotifGraph(edgelist, output)
 
     run_gtrieScanner(

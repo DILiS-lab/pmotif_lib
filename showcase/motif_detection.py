@@ -1,4 +1,6 @@
 """Perform a graphlet detection on the original and on generated random graphs"""
+# Code in showcase intentionally duplicated, so examples can stand alone
+# pylint: disable=duplicate-code
 import shutil
 from pathlib import Path
 from statistics import mean, stdev
@@ -18,6 +20,7 @@ OUTPUT = Path("./showcase_output")
 def main(
     edgelist: Path, output: Path, graphlet_size: int, number_of_random_graphs: int
 ):
+    """Run a motif detection."""
     pmotif_graph = PMotifGraph(edgelist, output)
 
     original_frequency = graphlet_detection(pmotif_graph, graphlet_size)
@@ -31,6 +34,12 @@ def main(
         random_frequency = graphlet_detection(random_graph, graphlet_size)
         random_frequencies.append(random_frequency)
 
+    analyse(original_frequency, random_frequencies)
+
+
+def analyse(original_frequency, random_frequencies):
+    """For each graphlet class, print its occurrence frequency and use the z-score
+    to compare the frequencies of each graphlet class."""
     print({graphlet_class_to_name(k): v for k, v in original_frequency.items()})
     for graphlet_class, frequency in original_frequency.items():
         all_random_frequencies = [
@@ -45,6 +54,7 @@ def main(
 
 
 def graphlet_detection(pgraph: PMotifGraph, graphlet_size: int):
+    """Perform a graphlet detection and return the graphlet class frequencies."""
     run_gtrieScanner(
         graph_edgelist=pgraph.get_graph_path(),
         graphlet_size=graphlet_size,
@@ -56,6 +66,7 @@ def graphlet_detection(pgraph: PMotifGraph, graphlet_size: int):
 
 
 def graphlet_occurrences_to_class_frequencies(graphlet_occurrences):
+    """Return a lookup from graphlet class to graphlet class frequency."""
     freq = {}
     for graphlet_occurrence in graphlet_occurrences:
         if graphlet_occurrence.graphlet_class not in freq:

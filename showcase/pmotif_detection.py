@@ -1,5 +1,7 @@
 """Perform a graphlet detection on the original and on generated random graphs,
 calculates metrics on the resulting graphlets and compares them."""
+# Code in showcase intentionally duplicated, so examples can stand alone
+# pylint: disable=duplicate-code
 import shutil
 from pathlib import Path
 from typing import List
@@ -24,6 +26,7 @@ OUTPUT = Path("./showcase_output")
 def main(
     edgelist: Path, output: Path, graphlet_size: int, number_of_random_graphs: int
 ):
+    """Run a p-motif detection (based on the positional metric 'degree') and basic analysis."""
     degree_metric = PDegree()
 
     pmotif_graph = PMotifGraph(edgelist, output)
@@ -43,29 +46,38 @@ def main(
         )
         random_metrics_by_class.append(metrics_by_graphlet_class)
 
-    # Analysis
+    analyse(original_metrics_by_graphlet_class, random_metrics_by_class)
+
+
+def analyse(original_metrics_by_graphlet_class, random_metrics_by_class):
+    """Perform pair-wise mann whitney u test between the original graph and the random graphs.
+    Print how many random graphs are determined as significant, grouped by graphlet class and
+    positional metric."""
     global_alpha = 0.05
     local_alpha = global_alpha / len(random_metrics_by_class)  # Bonferroni-Correction
-    for graphlet_class in original_metrics_by_graphlet_class:
-        for metric in original_metrics_by_graphlet_class[graphlet_class]:
+    for graphlet_class, metric_lookup in original_metrics_by_graphlet_class.items():
+        for metric_name, metric_values in metric_lookup.items():
             relevant_count = 0
             for random_metrics in random_metrics_by_class:
                 mannwhitneyu_r = mannwhitneyu(
-                    original_metrics_by_graphlet_class[graphlet_class][metric],
-                    random_metrics[graphlet_class][metric],
+                    metric_values,
+                    random_metrics[graphlet_class][metric_name],
                 )
                 if mannwhitneyu_r.pvalue > local_alpha:
                     # Degree Relevant!
                     relevant_count += 1
             print(
-                f"{graphlet_class_to_name(graphlet_class)}: {relevant_count} out of {len(random_metrics_by_class)}"
-                f" random graphs show significant differences in their {metric} distribution!"
+                f"{graphlet_class_to_name(graphlet_class)}:"
+                f" {relevant_count} out of {len(random_metrics_by_class)}"
+                f" random graphs show significant differences in their {metric_name} distribution!"
             )
 
 
 def get_metrics_by_graphlet_classes(
     pgraph: PMotifGraph, graphlet_size: int, metrics: List[PMetric]
 ):
+    """Perform a graphlet detection, calculate given metrics on detected graphlets, and
+    return the metrics as a lookup from graphlet class and metric name to the metric values."""
     run_gtrieScanner(
         graph_edgelist=pgraph.get_graph_path(),
         graphlet_size=graphlet_size,

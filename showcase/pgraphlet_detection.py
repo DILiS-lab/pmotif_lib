@@ -1,5 +1,7 @@
 """Performs a `graphlet_size` graphlet detection and
 calculates each metric in `metrics` for each graphlet occurrence."""
+# Code in showcase intentionally duplicated, so examples can stand alone
+# pylint: disable=duplicate-code
 import shutil
 from pathlib import Path
 
@@ -15,6 +17,7 @@ OUTPUT = Path("./showcase_output")
 
 
 def main(edgelist: Path, output: Path, graphlet_size: int):
+    """Run a p-graphlet detection (based on the positional metric 'degree')."""
     pmotif_graph = PMotifGraph(edgelist, output)
 
     run_gtrieScanner(
