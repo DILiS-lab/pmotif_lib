@@ -1,33 +1,34 @@
-# pMotif Masterthesis
+# pmotif-lib
+
+Perform motif detection, either with traditional frequency, or with positional metrics for each graphlet occurrence.
+
+This library implements each step of a (p)motif detection pipeline such as 
+- graphlet detection in networks
+- randomization of networks
+- frequency comparison of graphlet occurrences
+- positional metric comparison of graphlet occurrences.
 
 ## Setup
-
-### Virtualenv
-Create a virtualenv and activate it:
-```bash
-venv .venv
-source .venv/bin/activate
+Install this package:
 ```
-Now, install all the requirements:
-```bash
-pip3 install -r requirements.txt
+pip install pmotif-lib
 ```
 
-### Pythonpath
-For ease of use you can add the `pmotifs` module to the `PYTHONPATH`. This can also be scoped only for your virtualenv by changing `.venv/bin/activate`
-([see this stackoverflow question](https://stackoverflow.com/a/4758351)):
+This library relies on the `gtrieScanner` tool. Please [download it](https://www.dcc.fc.up.pt/gtries/) and compile it.
 
-```bash
-# Append these line to `.venv/bin/activate`
-export OLD_PYTHONPATH="$PYTHONPATH"
-export PYTHONPATH="/the/path/to/motif_position_tooling_repo"
+## Usage
+See `showcase/` for a number of examples:
+- graphlet detection
+- p-graphlet detection
+- motif detection
+- p-motif detection
 
-# Add this line to the beginning of the deactivate method in the same file
-export PYTHONPATH="$OLD_PYTHONPATH"
-```
-
-To use the notebooks, you need to export the virtualenv as jupyter kernel spec and add the `PYTHONPATH` there too:
-1. Activate the virtualenv
-2. Export the kernel: `python -m ipykernel install --user --name=<kernel_name>`
-3. Use `jupyter kernelspec list` to find the directory of your kernel
-4. Edit the `kernel.json` in that directory, adding `"env": {"PYTHONPATH": "/the/path/to/motif_position_tooling_repo"}` to it
+## Glossary
+- Induced Subgraph: A graph created by cutting out a set of nodes from a graph `G`, retaining all edges between these nodes
+- Isomorphic graphs: Graphs, that are structurally the same when ignoring node labels
+- Isomorphic Classes of Size k: A set of graphs with k nodes, so that every other graph with k nodes is isomorphic to one graph in the set
+- k-Graphlet: An isomorphic class of size k, so that at least one induced subgraph in a graph `G` is isomorphic to that class
+- Graphlet Occurrences: All induced sub-graphs in a graph `G` that belong to a specific k-Graphlet
+- Graphlet Frequency: The number of graphlet occurrences of a specific k-graphlet in a graph `G`
+- Graph Motif: A k-Graphlet, which has a graphlet frequency which is significantly higher than expected, usually tested against randomized graphs generated based on `G`
+- p-Motif: A k-Graphlet, which has graphlet occurrences with a significant expression of a positional metric, when compared against randomized graphs generated based on `G`
