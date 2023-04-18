@@ -19,5 +19,6 @@ classifiers = [
 
 [project.urls]
 "Homepage" = "https://github.com/timgarrels/pmotif_lib"
+"documentation" = "https://github.com/timgarrels/pmotif_lib/wiki"
 "Bug Tracker" = "https://github.com/timgarrels/pmotif_lib/issues"
 "Repository" = "https://github.com/timgarrels/pmotif_lib"
