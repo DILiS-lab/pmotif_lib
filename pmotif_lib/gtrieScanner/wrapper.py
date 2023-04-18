@@ -37,10 +37,9 @@ def run_gtrieScanner(
     # Build GTrieScanner command
     directed_arg = "-d" if directed else "-u"
     format_arg = "simple_weight" if with_weights else "simple"
-    prefix = "./" if str(gtrieScanner_executable)[0] not in ["/", "."] else ""
 
     command_parts = [
-        f"{prefix}{gtrieScanner_executable}",
+        f"{gtrieScanner_executable}",
         "-s",
         graphlet_size,
         "-f",

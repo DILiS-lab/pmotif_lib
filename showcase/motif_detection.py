@@ -6,15 +6,15 @@ from pathlib import Path
 from statistics import mean, stdev
 
 from pmotif_lib.p_motif_graph import PMotifGraph, PMotifGraphWithRandomization
-from pmotif_lib.config import DATASET_DIRECTORY
+from pmotif_lib.config import DATASET_DIRECTORY, EXPERIMENT_OUT
 from pmotif_lib.graphlet_representation import graphlet_class_to_name
 from pmotif_lib.gtrieScanner.wrapper import run_gtrieScanner
 
 
-DATASET = DATASET_DIRECTORY / "kaggle_star_wars.edgelist"
+DATASET = DATASET_DIRECTORY / "karate_club.edgelist"
 GRAPHLET_SIZE = 3
+OUTPUT = EXPERIMENT_OUT / "showcase_output"
 NUMBER_OF_RANDOM_GRAPHS = 10
-OUTPUT = Path("./showcase_output")
 
 
 def main(

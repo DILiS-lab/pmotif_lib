@@ -9,7 +9,7 @@ from typing import List
 from scipy.stats import mannwhitneyu
 
 from pmotif_lib.p_motif_graph import PMotifGraph, PMotifGraphWithRandomization
-from pmotif_lib.config import DATASET_DIRECTORY
+from pmotif_lib.config import DATASET_DIRECTORY, EXPERIMENT_OUT
 from pmotif_lib.graphlet_representation import graphlet_class_to_name
 from pmotif_lib.gtrieScanner.wrapper import run_gtrieScanner
 from pmotif_lib.p_metric.p_degree import PDegree
@@ -17,10 +17,10 @@ from pmotif_lib.p_metric.p_metric import PMetric
 from pmotif_lib.p_metric.metric_processing import calculate_metrics
 
 
-DATASET = DATASET_DIRECTORY / "kaggle_star_wars.edgelist"
+DATASET = DATASET_DIRECTORY / "karate_club.edgelist"
 GRAPHLET_SIZE = 3
 NUMBER_OF_RANDOM_GRAPHS = 10
-OUTPUT = Path("./showcase_output")
+OUTPUT = EXPERIMENT_OUT / "showcase_output"
 
 
 def main(
