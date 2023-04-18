@@ -1,10 +1,5 @@
 networkx
 tqdm
-powerlaw
-matplotlib
-ipykernel
-pyparsing
 pandas
-Jinja2
 scipy
 python-dotenv
