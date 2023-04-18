@@ -11,6 +11,7 @@ class PGraphModuleParticipation(PMetric):
     Graph modules are calculated using greedy modularity optimization.
     A graphlet participates in a module, if at least one graphlet node belongs to that module.
     """
+
     def __init__(self):
         super().__init__("pGraphModuleParticipation")
 

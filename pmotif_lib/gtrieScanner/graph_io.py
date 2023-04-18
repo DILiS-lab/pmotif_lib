@@ -4,7 +4,9 @@ from pathlib import Path
 import networkx as nx
 
 
-def write_shifted_edgelist(graph: nx.Graph, path: Path, reindex: bool = False, shift: int = 1):
+def write_shifted_edgelist(
+    graph: nx.Graph, path: Path, reindex: bool = False, shift: int = 1
+):
     """Writes the edgelist of a graph to a given path.
     Can reindex the given nodes, turning any node label to an integer representing the index of
     that node.
@@ -20,7 +22,8 @@ def write_shifted_edgelist(graph: nx.Graph, path: Path, reindex: bool = False, s
     # Creates edge list lines in the form of `u v 1`
     # The `1` is necessary for gTrieScanner to function correctly, as it always expects a weight
     lines = [
-        f"{node_mapping[u] + shift} {node_mapping[v] + shift} 1\n" for u, v in graph.edges()
+        f"{node_mapping[u] + shift} {node_mapping[v] + shift} 1\n"
+        for u, v in graph.edges()
     ]
     with open(path, "w", encoding="utf-8") as out:
         out.writelines(lines)

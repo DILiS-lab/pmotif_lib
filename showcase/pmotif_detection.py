@@ -21,7 +21,9 @@ NUMBER_OF_RANDOM_GRAPHS = 10
 OUTPUT = Path("./showcase_output")
 
 
-def main(edgelist: Path, output: Path, graphlet_size: int, number_of_random_graphs: int):
+def main(
+    edgelist: Path, output: Path, graphlet_size: int, number_of_random_graphs: int
+):
     degree_metric = PDegree()
 
     pmotif_graph = PMotifGraph(edgelist, output)

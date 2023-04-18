@@ -12,6 +12,7 @@ class PAnchorNodeDistance(PMetric):
     Anchor nodes are defined as hubs of the network (see `get_hubs`).
     The distance of a graphlet to a node is defined as the smallest distance between any
     node of the graphlet to the anchor node."""
+
     def __init__(self):
         super().__init__("pAnchorNodeDistance")
 
@@ -62,9 +63,7 @@ class PAnchorNodeDistance(PMetric):
         path_lengths = []
 
         shortest_path_lookup: Dict[str, int]
-        for shortest_path_lookup in pre_compute[
-            "nodes_shortest_path_lookup"
-        ].values():
+        for shortest_path_lookup in pre_compute["nodes_shortest_path_lookup"].values():
             distances = [
                 shortest_path_lookup[node]
                 for node in graphlet_nodes

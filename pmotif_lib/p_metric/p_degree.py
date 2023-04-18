@@ -9,6 +9,7 @@ class PDegree(PMetric):
     """Measures the degree of a graphlet.
     Graphlet degree is defined as the number of edges connecting a graphlet node to a non-graphlet
     node."""
+
     def __init__(self):
         super().__init__("pDegree")
 

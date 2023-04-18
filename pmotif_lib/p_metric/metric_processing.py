@@ -16,7 +16,9 @@ from pmotif_lib.p_metric.p_metric_result import PMetricResult
 
 
 def process_graphlet_occurrences(
-    graph: nx.Graph, graphlet_occurrences: List[GraphletOccurrence], metrics: List[PMetric]
+    graph: nx.Graph,
+    graphlet_occurrences: List[GraphletOccurrence],
+    metrics: List[PMetric],
 ) -> List[PMetricResult]:
     """Calculate motif positional metrics"""
 

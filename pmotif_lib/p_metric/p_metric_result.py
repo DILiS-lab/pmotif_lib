@@ -15,6 +15,7 @@ class PMetricResult:
     """Stores and loads PMetrics to disk. Creates a directory for each metric,
     containing the `graphlet_metrics` in a file, and a subdirectory `pre_compute`,
     with a file for each pre-compute key. Uses json and utf-8."""
+
     metric_name: str
     pre_compute: PreComputation
     graphlet_metrics: List[RawMetric]
@@ -28,11 +29,13 @@ class PMetricResult:
         os.makedirs(output / "pre_compute")
         for pre_compute_name, pre_compute_value in self.pre_compute.items():
             pre_compute_filepath = output / "pre_compute" / pre_compute_name
-            with open(pre_compute_filepath, "w", encoding='utf-8') as pre_compute_file:
+            with open(pre_compute_filepath, "w", encoding="utf-8") as pre_compute_file:
                 json.dump(pre_compute_value, pre_compute_file)
 
         # Store graphlet_metrics
-        with open(output / "graphlet_metrics", "w", encoding='utf-8') as graphlet_metrics_file:
+        with open(
+            output / "graphlet_metrics", "w", encoding="utf-8"
+        ) as graphlet_metrics_file:
             graphlet_metrics_file.write(
                 f"{len(self.graphlet_metrics)}\n"
             )  # Write len of file for progress bar total
@@ -58,7 +61,9 @@ class PMetricResult:
         for content in os.listdir(str(pre_compute_dir)):
             if not (pre_compute_dir / content).is_file():
                 continue
-            with open(pre_compute_dir / content, "r", encoding='utf-8') as pre_compute_file:
+            with open(
+                pre_compute_dir / content, "r", encoding="utf-8"
+            ) as pre_compute_file:
                 pre_compute[content] = json.load(pre_compute_file)
         return pre_compute
 
@@ -67,7 +72,9 @@ class PMetricResult:
         graphlet_metrics_filepath: Path, supress_tqdm=False
     ) -> List[RawMetric]:
         """Loads the graphlet metrics found at graphlet_metric_file"""
-        with open(graphlet_metrics_filepath, "r", encoding='utf-8') as graphlet_metrics_file:
+        with open(
+            graphlet_metrics_filepath, "r", encoding="utf-8"
+        ) as graphlet_metrics_file:
             total = int(graphlet_metrics_file.readline().strip())
             pbar = tqdm(
                 graphlet_metrics_file,

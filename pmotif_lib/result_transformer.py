@@ -20,6 +20,7 @@ ConsolidationMethod = Callable[[RawMetric, PreComputation], float]
 class ResultTransformer:
     """Load raw graphlets and their positional metrics from disk and offers an interface to
     consolidate the positional metrics into new evaluation metrics."""
+
     def __init__(
         self,
         pmotif_graph: PMotifGraph,

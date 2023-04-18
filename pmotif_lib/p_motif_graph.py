@@ -88,12 +88,15 @@ class PMotifGraph:
                     graphlet_class = " ".join(
                         [
                             label[i : i + graphlet_size]
-                            for i in range(0, graphlet_size * graphlet_size, graphlet_size)
+                            for i in range(
+                                0, graphlet_size * graphlet_size, graphlet_size
+                            )
                         ]
                     )
                     graphlets.append(
                         GraphletOccurrence(
-                            graphlet_class=graphlet_class, nodes=[n.strip() for n in nodes]
+                            graphlet_class=graphlet_class,
+                            nodes=[n.strip() for n in nodes],
                         )
                     )
             return graphlets
@@ -192,8 +195,8 @@ class PMotifGraphWithRandomization(PMotifGraph):
             graph_io.write_shifted_edgelist(
                 random_g,
                 edge_swapped_dir / f"{i}_random.edgelist",
-                shift=required_shift
-                )
+                shift=required_shift,
+            )
 
         return PMotifGraphWithRandomization(
             pmotif_graph.edgelist_path,
