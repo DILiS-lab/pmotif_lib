@@ -3,7 +3,7 @@ from setuptools import setup
 
 setup(
     name='pmotif_lib',
-    version='0.1.3',
+    version='0.1.4',
     url='https://github.com/timgarrels/pmotif_lib',
     author='Tim Garrels',
     author_email='tim.garrels@protonmail.com',
