@@ -21,7 +21,12 @@ def max_normalized_anchor_hop_distances(
 ) -> float:
     """Consolidate PAnchorNodeDistance. Normalize the distances by closeness centrality
     and return the highest distance."""
-    return max(_get_normalized_anchor_hop_distances(raw_metric, pre_compute))
+    distances = _get_normalized_anchor_hop_distances(raw_metric, pre_compute)
+    if len(distances) == 0:
+        return -1
+    if len(distances) == 1:
+        return distances[0]
+    return max(distances)
 
 
 def min_normalized_anchor_hop_distances(
@@ -29,7 +34,12 @@ def min_normalized_anchor_hop_distances(
 ) -> float:
     """Consolidate PAnchorNodeDistance. Normalize the distances by closeness centrality
     and return the lowest distance."""
-    return min(_get_normalized_anchor_hop_distances(raw_metric, pre_compute))
+    distances = _get_normalized_anchor_hop_distances(raw_metric, pre_compute)
+    if len(distances) == 0:
+        return -1
+    if len(distances) == 1:
+        return distances[0]
+    return min(distances)
 
 
 def mean_normalized_anchor_hop_distances(
@@ -37,7 +47,12 @@ def mean_normalized_anchor_hop_distances(
 ) -> float:
     """Consolidate PAnchorNodeDistance. Normalize the distances by closeness centrality
     and return the mean distance."""
-    return mean(_get_normalized_anchor_hop_distances(raw_metric, pre_compute))
+    distances = _get_normalized_anchor_hop_distances(raw_metric, pre_compute)
+    if len(distances) == 0:
+        return -1
+    if len(distances) == 1:
+        return distances[0]
+    return mean(distances)
 
 
 def _get_normalized_anchor_hop_distances(
