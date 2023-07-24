@@ -6,14 +6,16 @@ import shutil
 from pathlib import Path
 
 from pmotif_lib.p_motif_graph import PMotifGraph
-from pmotif_lib.config import DATASET_DIRECTORY, EXPERIMENT_OUT
 from pmotif_lib.gtrieScanner.wrapper import run_gtrieScanner
 from pmotif_lib.p_metric.p_degree import PDegree
 from pmotif_lib.p_metric.metric_processing import calculate_metrics
 
-DATASET = DATASET_DIRECTORY / "karate_club.edgelist"
+DATASET = Path("./artifacts") / "karate_club.edgelist"
 GRAPHLET_SIZE = 3
-OUTPUT = EXPERIMENT_OUT / "showcase_output"
+GTRIESCANNER_EXECUTABLE = "gtrieScanner"  # is in PATH
+OUTPUT = Path("./artifacts") / "showcase_output"
+
+WORKERS = 1
 
 
 def main(edgelist: Path, output: Path, graphlet_size: int):
@@ -24,11 +26,12 @@ def main(edgelist: Path, output: Path, graphlet_size: int):
         graph_edgelist=pmotif_graph.get_graph_path(),
         graphlet_size=graphlet_size,
         output_directory=pmotif_graph.get_graphlet_directory(),
+        gtrieScanner_executable=GTRIESCANNER_EXECUTABLE,
     )
 
     degree_metric = PDegree()
     metric_results = calculate_metrics(
-        pmotif_graph, graphlet_size, [degree_metric], True
+        pmotif_graph, graphlet_size, [degree_metric], True, workers=WORKERS,
     )
 
     graphlet_occurrences = pmotif_graph.load_graphlet_pos_zip(graphlet_size)

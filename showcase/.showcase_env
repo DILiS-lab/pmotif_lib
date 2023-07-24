@@ -1,3 +1,0 @@
-export DATASET_DIRECTORY="./artifacts"
-export EXPERIMENT_OUT="./artifacts"
-export GTRIESCANNER_EXECUTABLE=gtrieScanner

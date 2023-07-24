@@ -9,7 +9,6 @@ from typing import List
 from scipy.stats import mannwhitneyu
 
 from pmotif_lib.p_motif_graph import PMotifGraph, PMotifGraphWithRandomization
-from pmotif_lib.config import DATASET_DIRECTORY, EXPERIMENT_OUT
 from pmotif_lib.graphlet_representation import graphlet_class_to_name
 from pmotif_lib.gtrieScanner.wrapper import run_gtrieScanner
 from pmotif_lib.p_metric.p_degree import PDegree
@@ -17,10 +16,13 @@ from pmotif_lib.p_metric.p_metric import PMetric
 from pmotif_lib.p_metric.metric_processing import calculate_metrics
 
 
-DATASET = DATASET_DIRECTORY / "karate_club.edgelist"
+DATASET = Path("./artifacts") / "karate_club.edgelist"
+GTRIESCANNER_EXECUTABLE = "gtrieScanner"  # is in PATH
 GRAPHLET_SIZE = 3
+OUTPUT = Path("./artifacts") / "showcase_output"
 NUMBER_OF_RANDOM_GRAPHS = 10
-OUTPUT = EXPERIMENT_OUT / "showcase_output"
+
+WORKERS = 1
 
 
 def main(
@@ -82,10 +84,11 @@ def get_metrics_by_graphlet_classes(
         graph_edgelist=pgraph.get_graph_path(),
         graphlet_size=graphlet_size,
         output_directory=pgraph.get_graphlet_directory(),
+        gtrieScanner_executable=GTRIESCANNER_EXECUTABLE,
     )
 
     graphlet_occurrences = pgraph.load_graphlet_pos_zip(graphlet_size)
-    metric_results = calculate_metrics(pgraph, graphlet_size, metrics, True)
+    metric_results = calculate_metrics(pgraph, graphlet_size, metrics, True, workers=WORKERS)
 
     by_graphlet_class = {}
     for i, g_oc in enumerate(graphlet_occurrences):

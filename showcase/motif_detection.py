@@ -6,14 +6,14 @@ from pathlib import Path
 from statistics import mean, stdev
 
 from pmotif_lib.p_motif_graph import PMotifGraph, PMotifGraphWithRandomization
-from pmotif_lib.config import DATASET_DIRECTORY, EXPERIMENT_OUT
 from pmotif_lib.graphlet_representation import graphlet_class_to_name
 from pmotif_lib.gtrieScanner.wrapper import run_gtrieScanner
 
 
-DATASET = DATASET_DIRECTORY / "karate_club.edgelist"
+DATASET = Path("./artifacts") / "karate_club.edgelist"
 GRAPHLET_SIZE = 3
-OUTPUT = EXPERIMENT_OUT / "showcase_output"
+GTRIESCANNER_EXECUTABLE = "gtrieScanner"  # is in PATH
+OUTPUT = Path("./artifacts") / "showcase_output"
 NUMBER_OF_RANDOM_GRAPHS = 10
 
 
@@ -59,6 +59,7 @@ def graphlet_detection(pgraph: PMotifGraph, graphlet_size: int):
         graph_edgelist=pgraph.get_graph_path(),
         graphlet_size=graphlet_size,
         output_directory=pgraph.get_graphlet_directory(),
+        gtrieScanner_executable=GTRIESCANNER_EXECUTABLE,
     )
 
     graphlet_occurrences = pgraph.load_graphlet_pos_zip(graphlet_size)

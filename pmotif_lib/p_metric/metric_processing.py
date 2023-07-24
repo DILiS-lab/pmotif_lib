@@ -10,7 +10,6 @@ from tqdm import tqdm
 import networkx as nx
 from pmotif_lib.graphlet_occurence import GraphletOccurrence
 from pmotif_lib.p_motif_graph import PMotifGraph
-from pmotif_lib.config import WORKERS
 from pmotif_lib.p_metric.p_metric import PMetric
 from pmotif_lib.p_metric.p_metric_result import PMetricResult
 
@@ -19,6 +18,7 @@ def process_graphlet_occurrences(
     graph: nx.Graph,
     graphlet_occurrences: List[GraphletOccurrence],
     metrics: List[PMetric],
+    workers: int = 1,
 ) -> List[PMetricResult]:
     """Calculate motif positional metrics"""
 
@@ -30,7 +30,7 @@ def process_graphlet_occurrences(
         result[metric.name]["pre_compute"] = metric.pre_computation(graph)
 
     # Calculate metrics
-    with Pool(processes=WORKERS) as pool:
+    with Pool(processes=workers) as pool:
         for metric in tqdm(metrics, desc="Calculating metrics", leave=False):
             result[metric.name]["graphlet_metrics"] = []
             args = [
@@ -66,6 +66,7 @@ def calculate_metrics(
     graphlet_size: int,
     metrics: List[PMetric],
     save_to_disk: bool = True,
+    workers: int = 1,
 ) -> List[PMetricResult]:
     """When pointed to a graph and a motif file, unzips the motif file, reads the graphs,
      and calculates given positional metrics.
@@ -79,7 +80,7 @@ def calculate_metrics(
     )
 
     metric_result_lookup = process_graphlet_occurrences(
-        graph, graphlet_occurrences, metrics
+        graph, graphlet_occurrences, metrics, workers=workers,
     )
     if save_to_disk:
         metric_output = pmotif_graph.get_pmetric_directory(graphlet_size)

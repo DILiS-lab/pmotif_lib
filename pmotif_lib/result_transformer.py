@@ -9,7 +9,6 @@ import pandas as pd
 from tqdm import tqdm
 
 from pmotif_lib.p_motif_graph import PMotifGraph, PMotifGraphWithRandomization
-from pmotif_lib.config import WORKERS
 from pmotif_lib.p_metric.p_metric import RawMetric, PreComputation
 from pmotif_lib.p_metric.p_metric_result import PMetricResult
 
@@ -115,6 +114,7 @@ class ResultTransformer:
         pmotif_graph: PMotifGraph,
         graphlet_size: int,
         supress_tqdm: bool = False,
+        workers: int = 1,
     ) -> List[ResultTransformer]:
         """Loads `graphlet_size`-graphlets and computed metrics which are present on disk."""
         pmotif_with_rand = PMotifGraphWithRandomization(
@@ -126,7 +126,7 @@ class ResultTransformer:
             for swapped_graph in pmotif_with_rand.swapped_graphs
         ]
 
-        with Pool(processes=WORKERS) as pool:
+        with Pool(processes=workers) as pool:
             pbar = tqdm(
                 input_args,
                 total=len(pmotif_with_rand.swapped_graphs),

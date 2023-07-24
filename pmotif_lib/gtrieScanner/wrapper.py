@@ -8,7 +8,6 @@ from pathlib import Path
 from subprocess import Popen, PIPE
 import zipfile
 
-from pmotif_lib.config import GTRIESCANNER_EXECUTABLE
 from pmotif_lib.gtrieScanner.graph_io import read_edgelist
 
 
@@ -16,7 +15,7 @@ def run_gtrieScanner(
     graph_edgelist: Path,
     graphlet_size: int,
     output_directory: Path,
-    gtrieScanner_executable: Path = GTRIESCANNER_EXECUTABLE,
+    gtrieScanner_executable: str,
     directed: bool = False,
     with_weights: bool = True,
 ):
